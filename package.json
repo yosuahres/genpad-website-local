@@ -1,25 +1,44 @@
 {
-  "name": "genpad-website",
-  "description": "Genpad website for admin control",
-  "version": "0.1.0",
+  "name": "monorepo-template",
+  "description": "Monorepo template with Next.js, NestJS, Tailwind CSS, Turbo, and Prettier",
+  "version": "1.0.0",
   "private": true,
-  "packageManager": "npm@10.9.2",
+  "packageManager": "pnpm@8.7.5",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
+    "build": "turbo run build",
     "clean": "git clean -xdf node_modules",
     "clean:workspaces": "turbo run clean",
+    "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
-    "test": "turbo test",
-    "prepare": "husky"
+    "type-check": "turbo run type-check",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
-    "turbo": "latest"
+    "eslint": "^8.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.3.0",
+    "next": "13.4.12",
+    "prettier": "latest",
+    "prettier-plugin-tailwindcss": "^0.4.0",
+    "turbo": "latest",
+    "typescript": "^5.0.0"
+  },
+  "lint-staged": {
+    "apps/**/*.{js,ts,jsx,tsx}": [
+      "eslint --fix"
+    ],
+    "packages/ui/**/*.{js,ts,jsx,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{json,js,css,md}": "prettier --write"
   }
 }

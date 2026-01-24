@@ -1,5 +1,5 @@
 {
-  "extends": "@genpad/tsconfig/server.json",
+  "extends": "../../packages/tsconfig/server.json",
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
