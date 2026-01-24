@@ -1,0 +1,17 @@
+# Node
+node_modules/
+dist/
+*.log
+.env
+.DS_Store
+
+# Next.js
+apps/web/.next
+apps/web/out
+
+# NestJS
+apps/api/dist
+
+# VSCode
+.vscode/
+
