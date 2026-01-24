@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+    branches: 'main'
+  push:
+    branches: 'main'
+  workflow_dispatch:
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+jobs:
+  build-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: '☁️ Checkout repo'
+        uses: actions/checkout@v4 
+
+      - name: '🔧 Setup Node'
+        uses: actions/setup-node@v4 
+        with:
+          node-version: 20 
+          cache: 'npm' 
+
+      - name: '📦 Install deps'
+        run: npm install
+
+      - name: '🛠 Build, lint and type-check'
+        run: npm run build && npm run lint && npx turbo type-check
+
+      - name: '📊 repository visualizer'
+        id: diagram
+        uses: githubocto/repo-visualizer@0.9.1
+        with:
+          excluded_paths: 'node_modules,build,.vercel,.github,.husky'
+          should_push: false
+          root_path: ''
+
+      - name: '📊 visualizer artifacts'
+        uses: actions/upload-artifact@v4 
+        with:
+          name: diagram
+          path: diagram.svg
