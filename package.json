@@ -1,6 +1,6 @@
 {
   "name": "monorepo-template",
-  "description": "Monorepo template with Next.js, NestJS, Tailwind CSS, Turbo, and Prettier",
+  "description": "free",
   "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@8.7.5",
@@ -23,6 +23,8 @@
     "prepare": "husky install"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
     "@eslint/config-array": "^0.23.0",
     "@eslint/object-schema": "^3.0.0",
     "eslint": "^9.39.2",
