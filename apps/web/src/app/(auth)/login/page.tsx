@@ -1,15 +1,41 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from 'ui'; 
+import { createClient } from '../../../utils/supabase/client';
 
 export default function LoginPage(): React.ReactNode {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Logging in with:', { email, password });
+    setLoading(true);
+    setErrorMessage('');
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        return;
+      }
+
+      router.push('/dashboard');
+      router.refresh();
+    } catch (err) {
+      setErrorMessage('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -24,6 +50,7 @@ export default function LoginPage(): React.ReactNode {
               className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
               required
             />
             <input
@@ -32,10 +59,14 @@ export default function LoginPage(): React.ReactNode {
               className="block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
               required
             />
           </div>
-          <Button className="w-full">Sign In</Button>
+          <Button className="w-full" type="submit" disabled={loading}>
+            {loading ? 'Signing In...' : 'Sign In'}
+          </Button>
+          {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
         </form>
       </div>
     </div>

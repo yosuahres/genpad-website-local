@@ -1,12 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, UseGuards, Request, UnauthorizedException } from '@nestjs/common';
+import { AuthGuard } from './auth.guard';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  @UseGuards(AuthGuard)
+  @Get('protected-data')
+  getHello(@Request() req): string {
+    if (!req.user || !req.user.email) {
+      throw new UnauthorizedException('User information is missing');
+    }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+    return `Hello User ${req.user.email}, this data is from the backend!`;
   }
 }
