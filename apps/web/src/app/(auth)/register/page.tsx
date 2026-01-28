@@ -30,19 +30,14 @@ export default function RegisterPage(): React.ReactNode {
       if (signUpError) throw new Error(signUpError.message);
 
       if (signUpData.user) {
-        const { error: roleError } = await supabase
-          .from("profiles")
-          .insert({
-            id: signUpData.user.id,
-            role: "admin",
-          });
-
-        if (roleError) throw new Error(roleError.message);
+        setSuccessMessage("Account created successfully!");
+        
+        setTimeout(() => {
+          router.push("/dashboard");
+          router.refresh();
+        }, 1500);
       }
-
-      setSuccessMessage("Account created successfully!");
-      router.push("/dashboard");
-      router.refresh();
+      
     } catch (error: any) {
       setErrorMessage(error.message);
     } finally {
@@ -90,15 +85,19 @@ export default function RegisterPage(): React.ReactNode {
             type="submit"
             disabled={loading}
           >
-            {loading ? "Registering..." : "Create Account"}
+            {loading ? "Creating Account..." : "Register"}
           </Button>
 
           {errorMessage && (
-            <p className="text-center text-sm font-medium text-red-500">{errorMessage}</p>
+            <div className="p-3 rounded-md bg-red-50 border border-red-200">
+              <p className="text-center text-sm font-medium text-red-600">{errorMessage}</p>
+            </div>
           )}
           
           {successMessage && (
-            <p className="text-center text-sm font-medium text-green-600">{successMessage}</p>
+            <div className="p-3 rounded-md bg-green-50 border border-green-200">
+              <p className="text-center text-sm font-medium text-green-600">{successMessage}</p>
+            </div>
           )}
 
           <p className="text-center text-sm text-gray-600">

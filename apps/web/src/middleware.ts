@@ -17,7 +17,6 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
-          // Update request cookies and the response headers
           request.cookies.set({ name, value, ...options });
           response = NextResponse.next({
             request: {
@@ -39,25 +38,25 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  // const { data: { user } } = await supabase.auth.getUser();
 
-  const url = request.nextUrl.clone();
+  // const url = request.nextUrl.clone();
 
-  if (url.pathname.startsWith('/dashboard')) {
-    if (!user) {
-      url.pathname = '/';
-      return NextResponse.redirect(url);
-    }
-  }
+  // if (url.pathname.startsWith('/dashboard')) {
+  //   if (!user) {
+  //     url.pathname = '/';
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
-  const isAuthPage = url.pathname === '/' || url.pathname.startsWith('/') || url.pathname.startsWith('/register');
+  // const isAuthPage = url.pathname === '/' || url.pathname.startsWith('/') || url.pathname.startsWith('/register');
   
-  if (isAuthPage) {
-    if (user) {
-      url.pathname = '/dashboard';
-      return NextResponse.redirect(url);
-    }
-  }
+  // if (isAuthPage) {
+  //   if (user) {
+  //     url.pathname = '/dashboard';
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
   return response;
 }

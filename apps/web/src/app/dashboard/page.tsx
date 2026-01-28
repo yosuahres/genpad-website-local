@@ -10,7 +10,7 @@ export default function DashboardPage() {
   const supabase = createClient();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user }, error }) => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) console.log("Dashboard user:", user);
     });
   }, []);

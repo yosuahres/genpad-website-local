@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, LayoutDashboard, ShoppingCart, Package, Settings, Users, PenTool, Database } from "lucide-react"; 
+import { ChevronLeft, ChevronRight, LayoutDashboard, ShoppingCart, Package, Settings, Users } from "lucide-react"; 
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -13,7 +13,6 @@ export default function Sidebar() {
         isCollapsed ? "w-20" : "w-64"
       }`}
     >
-      {/* Header & Toggle Button */}
       <div className="p-4 flex items-center justify-between">
         {!isCollapsed && <span className="text-lg font-bold whitespace-nowrap">Genpad Admin</span>}
         <button 
@@ -27,17 +26,13 @@ export default function Sidebar() {
       <nav className="flex-1 mt-4">
         <ul className="space-y-2 px-2">
           <SidebarItem icon={<LayoutDashboard size={20} />} label="Dashboard" isCollapsed={isCollapsed} href="/dashboard" />
-          <SidebarItem icon={<ShoppingCart size={20} />} label="Sales" isCollapsed={isCollapsed} href="/sales" />
-          <SidebarItem icon={<Package size={20} />} label="Inventory" isCollapsed={isCollapsed} href="/inventory" />
-          <SidebarItem icon={<Users size={20} />} label="Membership" isCollapsed={isCollapsed} href="/membership" />
-          <SidebarItem icon={<Settings size={20} />} label="Settings" isCollapsed={isCollapsed} href="/settings" />
+          <SidebarItem icon={<Users size={20} />} label="Users & Roles" isCollapsed={isCollapsed} href="/dashboard/users" />
         </ul>
       </nav>
     </aside>
   );
 }
 
-// Small helper component for nav items
 function SidebarItem({ icon, label, isCollapsed, href }: { icon: React.ReactNode, label: string, isCollapsed: boolean, href: string }) {
   return (
     <li>
