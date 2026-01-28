@@ -2,6 +2,12 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -11,42 +17,53 @@ export async function middleware(request: NextRequest) {
           return request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
+          // Update request cookies and the response headers
           request.cookies.set({ name, value, ...options });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({ name, value, ...options });
         },
         remove(name: string, options: CookieOptions) {
           request.cookies.set({ name, value: '', ...options });
+          response = NextResponse.next({
+            request: {
+              headers: request.headers,
+            },
+          });
+          response.cookies.set({ name, value: '', ...options });
         },
       },
     }
   );
 
-  const { data: { user }, error } = await supabase.auth.getUser();
-  const url = request.nextUrl.clone();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  console.log('Middleware triggered for:', url.pathname);
-  console.log('Session:', user);
-  console.log('Session details:', user);
-  console.log('Error:', error);
+  const url = request.nextUrl.clone();
 
   if (url.pathname.startsWith('/dashboard')) {
     if (!user) {
-      console.log('Redirecting to /login');
       url.pathname = '/';
       return NextResponse.redirect(url);
     }
   }
 
-  if (url.pathname.startsWith('/login') || url.pathname.startsWith('/register')) {
+  const isAuthPage = url.pathname === '/' || url.pathname.startsWith('/') || url.pathname.startsWith('/register');
+  
+  if (isAuthPage) {
     if (user) {
-      console.log('Redirecting to /dashboard');
       url.pathname = '/dashboard';
       return NextResponse.redirect(url);
     }
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };
