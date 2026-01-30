@@ -1,4 +1,3 @@
-//loginpage
 'use client';
 
 import { useState } from 'react';
@@ -21,13 +20,36 @@ export default function LoginPage(): React.ReactNode {
     setErrorMessage('');
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setErrorMessage(error.message);
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      });
+
+      if (authError) {
+        setErrorMessage(authError.message);
+        setLoading(false);
         return;
       }
-      router.push('/dashboard');
-      router.refresh();
+
+      if (data.user) {
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles') 
+          .select('role')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        const isAdmin = profile?.role === 'admin';
+
+        if (profileError || !isAdmin) {
+          await supabase.auth.signOut();
+          setErrorMessage('Access Denied: You do not have administrator privileges.');
+          setLoading(false);
+          return;
+        }
+
+        router.push('/dashboard');
+        router.refresh();
+      }
     } catch (err) {
       setErrorMessage('An unexpected error occurred. Please try again.');
     } finally {
@@ -40,6 +62,7 @@ export default function LoginPage(): React.ReactNode {
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-xl ring-1 ring-gray-200">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-gray-900">Admin Login</h2>
+          <p className="mt-2 text-sm text-gray-500">GenPad Admin Only</p>
         </div>
 
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
@@ -75,15 +98,19 @@ export default function LoginPage(): React.ReactNode {
             type="submit" 
             disabled={loading}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? 'Verifying Credentials...' : 'Sign In'}
           </Button>
 
-          {errorMessage && <p className="text-center text-sm font-medium text-red-500">{errorMessage}</p>}
+          {errorMessage && (
+            <div className="rounded-md bg-red-50 p-3 ring-1 ring-red-200">
+              <p className="text-center text-sm font-medium text-red-600">{errorMessage}</p>
+            </div>
+          )}
 
           <p className="text-center text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Register now
+            Back to{' '}
+            <Link href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Main Site
             </Link>
           </p>
         </form>

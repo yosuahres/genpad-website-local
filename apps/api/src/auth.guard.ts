@@ -1,3 +1,4 @@
+//auth.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -32,7 +33,6 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Invalid or expired token');
     }
 
-    // Attach user to request for use in controllers
     request.user = data.user;
     return true;
   }

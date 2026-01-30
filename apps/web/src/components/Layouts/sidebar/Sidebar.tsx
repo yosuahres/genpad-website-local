@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, LayoutDashboard, ShoppingCart, Package, Settings, Users } from "lucide-react"; 
+import { ChevronLeft, ChevronRight, LayoutDashboard, Users } from "lucide-react"; 
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
