@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, LayoutDashboard, Users } from "lucide-react"; 
+import { ChevronLeft, ChevronRight, Filter, LayoutDashboard, Users } from "lucide-react"; 
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -26,6 +26,7 @@ export default function Sidebar() {
       <nav className="flex-1 mt-4">
         <ul className="space-y-2 px-2">
           <SidebarItem icon={<LayoutDashboard size={20} />} label="Dashboard" isCollapsed={isCollapsed} href="/dashboard" />
+          <SidebarItem icon={<Filter size={20} />} label="Rapor Anak" isCollapsed={isCollapsed} href="/dashboard/reports" />
           <SidebarItem icon={<Users size={20} />} label="Users & Roles" isCollapsed={isCollapsed} href="/dashboard/users" />
         </ul>
       </nav>
