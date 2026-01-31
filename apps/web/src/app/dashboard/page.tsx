@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "../../utils/supabase/client";
-import { Users, MapPin, GraduationCap, FileText, ArrowUpRight } from "lucide-react";
+import { Users, MapPin, FileText, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "../../components/Layouts/sidebar/Sidebar";
 import Header from "../../components/Layouts/header/header";
