@@ -21,7 +21,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="flex items-center justify-between bg-white px-6 py-4 border-b border-gray-100">
-      <h1 className="text-lg font-semibold text-gray-800 tracking-tight">BrandName</h1>
+      <h1 className="text-lg font-semibold text-gray-800 tracking-tight">GenPad</h1>
       
       <div className="relative" ref={dropdownRef}>
         <button
