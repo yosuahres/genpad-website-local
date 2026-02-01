@@ -1,119 +1,86 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from 'ui'; 
+import React, { useState } from 'react';
 import { createClient } from '../../../utils/supabase/client';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage(): React.ReactNode {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [error, setError] = useState('');
+
   const router = useRouter();
   const supabase = createClient();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage('');
+    setError('');
 
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({ 
-        email, 
-        password 
-      });
-
-      if (authError) {
-        setErrorMessage(authError.message);
-        setLoading(false);
-        return;
-      }
+      const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+      if (authError) throw authError;
 
       if (data.user) {
+        // Ambil role dari tabel public.users
         const { data: profile, error: profileError } = await supabase
-          .from('profiles') 
-          .select('role')
+          .from('users')
+          .select('is_active, roles(name)')
           .eq('id', data.user.id)
-          .maybeSingle();
+          .single();
 
-        const isAdmin = profile?.role === 'admin';
-
-        if (profileError || !isAdmin) {
+        if (profileError || !profile) throw new Error('Failed to load user profile.');
+        if (!profile.is_active) {
           await supabase.auth.signOut();
-          setErrorMessage('Access Denied: You do not have administrator privileges.');
-          setLoading(false);
-          return;
+          throw new Error('Your account is deactivated.');
         }
 
         router.push('/dashboard');
         router.refresh();
       }
-    } catch (err) {
-      setErrorMessage('An unexpected error occurred. Please try again.');
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-200 p-4">
-      <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-xl ring-1 ring-gray-200">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Admin Login</h2>
-          <p className="mt-2 text-sm text-gray-500">GenPad Admin Only</p>
-        </div>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
+      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-100">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">Login</h1>
+        
+        {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-200">{error}</div>}
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email Address</label>
-              <input
-                type="email"
-                placeholder="admin@example.com"
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                required
-              />
-            </div>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-black"
+              placeholder="email@example.com"
+            />
           </div>
-
-          <Button 
-            className="w-full rounded-lg bg-indigo-600 py-3 font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50" 
-            type="submit" 
-            disabled={loading}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input
+              type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-black"
+              placeholder="••••••••"
+            />
+          </div>
+          <button
+            type="submit" disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
           >
-            {loading ? 'Verifying Credentials...' : 'Sign In'}
-          </Button>
-
-          {errorMessage && (
-            <div className="rounded-md bg-red-50 p-3 ring-1 ring-red-200">
-              <p className="text-center text-sm font-medium text-red-600">{errorMessage}</p>
-            </div>
-          )}
-
-          <p className="text-center text-sm text-gray-600">
-            Back to{' '}
-            <Link href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Main Site
-            </Link>
-          </p>
+            {loading ? 'Verifying...' : 'Sign In'}
+          </button>
         </form>
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account? <Link href="/register" className="text-blue-600 hover:underline">Register</Link>
+        </p>
       </div>
     </div>
   );
