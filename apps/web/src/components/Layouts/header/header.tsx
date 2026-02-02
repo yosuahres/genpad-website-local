@@ -1,66 +1,53 @@
+// apps/web/src/components/Layouts/header/header.tsx
 'use client';
 
-import React from 'react';
-import { Menu, Bell, User, Search } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Menu, Search, User } from 'lucide-react';
+import NotificationDropdown from './NotificationDropdown';
+import LogoutButton from './LogoutButton';
+import { createClient } from "~/utils/supabase/client";
 
-interface HeaderProps {
-  sidebarOpen: boolean;
-  setSidebarOpen: (arg: boolean) => void;
-}
+export default function Header({ setSidebarOpen }: { setSidebarOpen: (arg: boolean) => void }) {
+  const [profile, setProfile] = useState<{name: string, role_id: number} | null>(null);
+  const supabase = createClient();
 
-const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase.from('users').select('name, role_id').eq('id', user.id).single();
+        if (data) setProfile(data);
+      }
+    };
+    fetchProfile();
+  }, []);
+
   return (
-    <header className="sticky top-0 z-999 flex w-full bg-white border-b border-slate-200">
-      <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
-        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
-          <button
-            aria-controls="sidebar"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSidebarOpen(!sidebarOpen);
-            }}
-            className="z-99999 block rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm lg:hidden"
-          >
-            <Menu size={20} className="text-slate-600" />
-          </button>
+    <header className="sticky top-0 z-40 flex w-full bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3 md:px-6 justify-between items-center">
+      <div className="flex items-center gap-4">
+        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 bg-slate-50 rounded-lg"><Menu size={20} /></button>
+        <div className="hidden sm:relative sm:block">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input type="text" placeholder="Search..." className="bg-slate-50 pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-sm w-64" />
         </div>
+      </div>
 
-        <div className="hidden sm:block">
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2">
-              <Search size={18} className="text-slate-400" />
-            </span>
-            <input
-              type="text"
-              placeholder="Type to search..."
-              className="w-full bg-slate-50 pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-            />
+      <div className="flex items-center gap-4">
+        <NotificationDropdown />
+        
+        <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
+          <div className="hidden text-right md:block">
+            <p className="text-sm font-bold text-slate-800 leading-none">{profile?.name || 'Loading...'}</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">
+              {profile?.role_id === 1 ? 'Super Admin' : 'Admin'}
+            </p>
           </div>
-        </div>
-
-        <div className="flex items-center gap-3 2xsm:gap-7">
-          <ul className="flex items-center gap-2 2xsm:gap-4">
-            <li>
-              <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition-colors">
-                <Bell size={20} />
-                <span className="absolute top-2.5 right-3 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
-              </button>
-            </li>
-          </ul>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden text-right lg:block">
-              <span className="block text-sm font-semibold text-slate-800">User Name</span>
-              <span className="block text-[11px] font-medium text-slate-500 uppercase tracking-tight">Admin Role</span>
-            </div>
-            <div className="h-10 w-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
-               <User size={24} className="text-slate-500 translate-y-1" />
-            </div>
+          <div className="h-9 w-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
+            <User size={18} />
           </div>
+          <LogoutButton />
         </div>
       </div>
     </header>
   );
-};
-
-export default Header;
+}
