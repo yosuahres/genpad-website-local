@@ -9,17 +9,18 @@ import {
   LayoutDashboard, 
   Users, 
   ChevronDown, 
-  UserPlus, 
-  List 
+  Map, 
+  ShieldCheck, 
+  Baby,
+  List
 } from "lucide-react"; 
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isUsersOpen, setIsUsersOpen] = useState(false);
+  const [isDataOpen, setIsDataOpen] = useState(false);
 
-  // Auto-close dropdown if sidebar is collapsed to prevent UI glitches
   const toggleSidebar = () => {
-    if (!isCollapsed) setIsUsersOpen(false);
+    if (!isCollapsed) setIsDataOpen(false);
     setIsCollapsed(!isCollapsed);
   };
 
@@ -39,59 +40,96 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex-1 mt-6">
-        <ul className="space-y-2 px-3">
-          <SidebarItem 
-            icon={<LayoutDashboard size={20} />} 
-            label="Dashboard" 
-            isCollapsed={isCollapsed} 
-            href="/dashboard" 
-          />
-          
-          <SidebarItem 
-            icon={<Filter size={20} />} 
-            label="Rapor Anak" 
-            isCollapsed={isCollapsed} 
-            href="/dashboard/reports" 
-          />
+      <nav className="flex-1 mt-6 overflow-y-auto custom-scrollbar">
+        {/* SECTION 1: MAIN MENU */}
+        <div className="px-3 mb-8">
+          {!isCollapsed && (
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 px-2">
+              Main Menu
+            </p>
+          )}
+          <ul className="space-y-2">
+            <SidebarItem 
+              icon={<LayoutDashboard size={20} />} 
+              label="Dashboard" 
+              isCollapsed={isCollapsed} 
+              href="/dashboard" 
+            />
+            <SidebarItem 
+              icon={<Filter size={20} />} 
+              label="Rapor Anak" 
+              isCollapsed={isCollapsed} 
+              href="/dashboard/reports" 
+            />
+          </ul>
+        </div>
 
-          {/* Users & Roles Dropdown Group */}
-          <li>
-            <button
-              onClick={() => !isCollapsed && setIsUsersOpen(!isUsersOpen)}
-              className={`w-full flex items-center p-2 rounded-lg hover:bg-gray-800 transition-colors group ${
-                isUsersOpen && !isCollapsed ? "bg-gray-800/50 text-blue-400" : "text-gray-300"
-              }`}
-            >
-              <div className="min-w-[20px]"><Users size={20} /></div>
-              {!isCollapsed && (
-                <>
-                  <span className="ml-3 flex-1 text-left font-medium">Users & Roles</span>
-                  <ChevronDown 
-                    size={16} 
-                    className={`transition-transform duration-200 ${isUsersOpen ? "rotate-180" : ""}`} 
+        {/* SECTION 2: DATA (DROPDOWN) */}
+        <div className="px-3 mb-8">
+          {!isCollapsed && (
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 px-2">
+              Data
+            </p>
+          )}
+          <ul className="space-y-2">
+            <li>
+              <button
+                onClick={() => !isCollapsed && setIsDataOpen(!isDataOpen)}
+                className={`w-full flex items-center p-2 rounded-lg hover:bg-gray-800 transition-colors group ${
+                  isDataOpen && !isCollapsed ? "bg-gray-800/50 text-blue-400" : "text-gray-300"
+                }`}
+              >
+                <div className="min-w-[20px]"><List size={20} /></div>
+                {!isCollapsed && (
+                  <>
+                    <span className="ml-3 flex-1 text-left font-medium">Master Data</span>
+                    <ChevronDown 
+                      size={16} 
+                      className={`transition-transform duration-200 ${isDataOpen ? "rotate-180" : ""}`} 
+                    />
+                  </>
+                )}
+              </button>
+
+              {!isCollapsed && isDataOpen && (
+                <ul className="mt-2 ml-6 space-y-1 border-l border-gray-700 pl-4">
+                  <SidebarSubItem 
+                    icon={<Map size={16} />} 
+                    label="Regions" 
+                    href="/dashboard/data/regions" 
                   />
-                </>
+                  <SidebarSubItem 
+                    icon={<ShieldCheck size={16} />} 
+                    label="Roles" 
+                    href="/dashboard/data/roles" 
+                  />
+                  <SidebarSubItem 
+                    icon={<Baby size={16} />} 
+                    label="Anak Asuh" 
+                    href="/dashboard/data/anak-asuh" 
+                  />
+                </ul>
               )}
-            </button>
+            </li>
+          </ul>
+        </div>
 
-            {/* Sub-menu Items */}
-            {!isCollapsed && isUsersOpen && (
-              <ul className="mt-2 ml-6 space-y-1 border-l border-gray-700 pl-4">
-                <SidebarSubItem 
-                  icon={<List size={16} />} 
-                  label="All Users" 
-                  href="/dashboard/users" 
-                />
-                <SidebarSubItem 
-                  icon={<UserPlus size={16} />} 
-                  label="Add New User" 
-                  href="/dashboard/users/new" 
-                />
-              </ul>
-            )}
-          </li>
-        </ul>
+        {/* SECTION 3: SYSTEM */}
+        <div className="px-3">
+          {!isCollapsed && (
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 px-2">
+              System
+            </p>
+          )}
+          <ul className="space-y-2">
+            <SidebarItem 
+              icon={<Users size={20} />} 
+              label="User Management" 
+              isCollapsed={isCollapsed} 
+              href="/dashboard/users" 
+            />
+          </ul>
+        </div>
       </nav>
     </aside>
   );
