@@ -29,19 +29,44 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-
   const url = request.nextUrl.clone();
 
+  // Guard Dashboard Routes
   if (url.pathname.startsWith('/dashboard')) {
     if (!user) {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // Fetch user profile to check role
+    const { data: profile } = await supabase
+      .from('users')
+      .select('role_id')
+      .eq('id', user.id)
+      .single();
+
+    // 1. Superadmin Route Protection
+    if (url.pathname.startsWith('/dashboard/superadmin') && profile?.role_id !== 1) {
+      return NextResponse.redirect(new URL('/dashboard/admin', request.url));
+    }
+
+    // 2. Admin Route Protection
+    if (url.pathname.startsWith('/dashboard/admin') && profile?.role_id !== 2) {
+      return NextResponse.redirect(new URL('/dashboard/superadmin', request.url));
     }
   }
 
-  const isAuthPage = url.pathname === '/' || url.pathname === '/register';
-  
+  // Handle Auth Pages (prevent logged-in users from seeing login/register)
+  const isAuthPage = url.pathname === '/login' || url.pathname === '/register' || url.pathname === '/';
   if (isAuthPage && user) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+     // Fetch role to know where to redirect from the root/login
+     const { data: profile } = await supabase
+      .from('users')
+      .select('role_id')
+      .eq('id', user.id)
+      .single();
+      
+     const target = profile?.role_id === 1 ? '/dashboard/superadmin' : '/dashboard/admin';
+     return NextResponse.redirect(new URL(target, request.url));
   }
 
   return response;

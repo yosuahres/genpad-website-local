@@ -1,168 +1,93 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Filter, 
-  LayoutDashboard, 
-  Users, 
-  ChevronDown, 
-  Map, 
-  ShieldCheck, 
-  Baby,
-  List
-} from "lucide-react"; 
+import React, { useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { ShieldCheck, ChevronRight, X } from 'lucide-react';
+import { ADMIN_MENU, SUPERADMIN_MENU, ROLE_IDS } from '../../../constants/navigation';
 
-export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isDataOpen, setIsDataOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    if (!isCollapsed) setIsDataOpen(false);
-    setIsCollapsed(!isCollapsed);
-  };
-
-  return (
-    <aside 
-      className={`bg-gray-900 text-white flex flex-col transition-all duration-300 ease-in-out min-h-screen border-r border-gray-700 ${
-        isCollapsed ? "w-20" : "w-64"
-      }`}
-    >
-      <div className="p-4 flex items-center justify-between border-b border-gray-800">
-        {!isCollapsed && <span className="text-xl font-extrabold tracking-tight text-blue-400">Genpad Admin</span>}
-        <button 
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors border border-gray-700"
-        >
-          {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-        </button>
-      </div>
-
-      <nav className="flex-1 mt-6 overflow-y-auto custom-scrollbar">
-        {/* SECTION 1: MAIN MENU */}
-        <div className="px-3 mb-8">
-          {!isCollapsed && (
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 px-2">
-              Main Menu
-            </p>
-          )}
-          <ul className="space-y-2">
-            <SidebarItem 
-              icon={<LayoutDashboard size={20} />} 
-              label="Dashboard" 
-              isCollapsed={isCollapsed} 
-              href="/dashboard" 
-            />
-            <SidebarItem 
-              icon={<Filter size={20} />} 
-              label="Rapor Anak" 
-              isCollapsed={isCollapsed} 
-              href="/dashboard/reports" 
-            />
-          </ul>
-        </div>
-
-        {/* SECTION 2: DATA (DROPDOWN) */}
-        <div className="px-3 mb-8">
-          {!isCollapsed && (
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 px-2">
-              Data
-            </p>
-          )}
-          <ul className="space-y-2">
-            <li>
-              <button
-                onClick={() => !isCollapsed && setIsDataOpen(!isDataOpen)}
-                className={`w-full flex items-center p-2 rounded-lg hover:bg-gray-800 transition-colors group ${
-                  isDataOpen && !isCollapsed ? "bg-gray-800/50 text-blue-400" : "text-gray-300"
-                }`}
-              >
-                <div className="min-w-[20px]"><List size={20} /></div>
-                {!isCollapsed && (
-                  <>
-                    <span className="ml-3 flex-1 text-left font-medium">Master Data</span>
-                    <ChevronDown 
-                      size={16} 
-                      className={`transition-transform duration-200 ${isDataOpen ? "rotate-180" : ""}`} 
-                    />
-                  </>
-                )}
-              </button>
-
-              {!isCollapsed && isDataOpen && (
-                <ul className="mt-2 ml-6 space-y-1 border-l border-gray-700 pl-4">
-                  <SidebarSubItem 
-                    icon={<Map size={16} />} 
-                    label="Regions" 
-                    href="/dashboard/data/regions" 
-                  />
-                  <SidebarSubItem 
-                    icon={<ShieldCheck size={16} />} 
-                    label="Roles" 
-                    href="/dashboard/data/roles" 
-                  />
-                  <SidebarSubItem 
-                    icon={<Baby size={16} />} 
-                    label="Anak Asuh" 
-                    href="/dashboard/data/anak-asuh" 
-                  />
-                </ul>
-              )}
-            </li>
-          </ul>
-        </div>
-
-        {/* SECTION 3: SYSTEM */}
-        <div className="px-3">
-          {!isCollapsed && (
-            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 px-2">
-              System
-            </p>
-          )}
-          <ul className="space-y-2">
-            <SidebarItem 
-              icon={<Users size={20} />} 
-              label="User Management" 
-              isCollapsed={isCollapsed} 
-              href="/dashboard/users" 
-            />
-          </ul>
-        </div>
-      </nav>
-    </aside>
-  );
+interface SidebarProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (arg: boolean) => void;
+  roleId: number;
 }
 
-function SidebarItem({ icon, label, isCollapsed, href }: { icon: React.ReactNode, label: string, isCollapsed: boolean, href: string }) {
+const Sidebar = ({ sidebarOpen, setSidebarOpen, roleId }: SidebarProps) => {
+  const pathname = usePathname();
+  const isSuperAdmin = roleId === ROLE_IDS.SUPERADMIN;
+  const menuItems = isSuperAdmin ? SUPERADMIN_MENU : ADMIN_MENU;
+
+  // Sync: Close sidebar on mobile when route changes
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname, setSidebarOpen]);
+
   return (
-    <li>
-      <Link 
-        href={href} 
-        className="flex items-center p-2 rounded-lg hover:bg-gray-800 text-gray-300 hover:text-white transition-all group"
+    <>
+      {/* Mobile Backdrop */}
+      <div
+        className={`fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm transition-opacity lg:hidden ${
+          sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      <aside
+        className={`fixed left-0 top-0 z-[9999] flex h-screen w-72 flex-col border-r border-white/10 bg-[#0F1115] transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
-        <div className="min-w-[20px]">{icon}</div>
-        <span className={`ml-3 font-medium transition-opacity duration-300 whitespace-nowrap ${
-          isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
-        }`}>
-          {label}
-        </span>
-      </Link>
-    </li>
-  );
-}
+        <div className="flex items-center justify-between px-8 py-8">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 shadow-lg shadow-indigo-500/20">
+              <ShieldCheck className="text-white" size={24} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-white font-bold text-lg leading-none">Genpad</span>
+              <span className="text-[10px] font-medium uppercase tracking-widest text-slate-500 mt-1">
+                {isSuperAdmin ? 'Super Control' : 'Administrator'}
+              </span>
+            </div>
+          </Link>
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-slate-400">
+            <X size={20} />
+          </button>
+        </div>
 
-function SidebarSubItem({ icon, label, href }: { icon: React.ReactNode, label: string, href: string }) {
-  return (
-    <li>
-      <Link 
-        href={href} 
-        className="flex items-center p-2 rounded-md text-sm text-gray-400 hover:text-blue-400 hover:bg-gray-800/40 transition-all"
-      >
-        <span className="mr-2">{icon}</span>
-        {label}
-      </Link>
-    </li>
+        <nav className="flex-1 overflow-y-auto px-4 no-scrollbar">
+          <div className="px-4 mb-4 mt-4">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-600">
+              Navigation
+            </h3>
+          </div>
+          <ul className="flex flex-col gap-1.5">
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.path;
+              return (
+                <li key={item.path}>
+                  <Link
+                    href={item.path}
+                    className={`group flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                      isActive 
+                        ? 'bg-white/5 text-white' 
+                        : 'text-slate-400 hover:bg-white/[0.03] hover:text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon size={18} className={isActive ? 'text-indigo-400' : ''} />
+                      {item.name}
+                    </div>
+                    {isActive && <ChevronRight size={14} className="text-indigo-400" />}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </aside>
+    </>
   );
-}
+};
+
+export default Sidebar;

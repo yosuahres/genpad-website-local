@@ -1,79 +1,62 @@
-"use client";
+'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import LogoutButton from "./LogoutButton";
-import NotificationDropdown from "./NotificationDropdown"; // New Import
-import Link from "next/link";
+import React from 'react';
+import { Menu, Bell, User, Search } from 'lucide-react';
 
-const Header: React.FC = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+interface HeaderProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: (arg: boolean) => void;
+}
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
+const Header = ({ sidebarOpen, setSidebarOpen }: HeaderProps) => {
   return (
-    <header className="flex items-center justify-between bg-white px-6 py-4 border-b border-gray-100">
-      <h1 className="text-lg font-semibold text-gray-800 tracking-tight">GenPad</h1>
-      
-      <div className="flex items-center space-x-3">
-        <NotificationDropdown />
-
-        <div className="relative" ref={dropdownRef}>
+    <header className="sticky top-0 z-999 flex w-full bg-white border-b border-slate-200">
+      <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+        <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           <button
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
-              isDropdownOpen ? 'bg-gray-100' : 'hover:bg-gray-50'
-            } focus:outline-none`}
+            aria-controls="sidebar"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSidebarOpen(!sidebarOpen);
+            }}
+            className="z-99999 block rounded-lg border border-slate-200 bg-white p-1.5 shadow-sm lg:hidden"
           >
-            <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-medium text-sm">
-              JD
-            </div>
-            <span className="text-sm font-medium text-gray-700">Account</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+            <Menu size={20} className="text-slate-600" />
           </button>
+        </div>
 
-          {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50 transform origin-top-right transition-all animate-in fade-in zoom-in duration-100">
-              <div className="px-4 py-2 border-b border-gray-50 mb-1">
-                <p className="text-xs text-gray-400 uppercase font-semibold">Settings</p>
-              </div>
-              
-              <Link
-                href="/profile"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                onClick={() => setIsDropdownOpen(false)}
-              >
-                My Profile
-              </Link>
-              
-              <Link
-                href="/settings"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
-                onClick={() => setIsDropdownOpen(false)}
-              >
-                Account Settings
-              </Link>
+        <div className="hidden sm:block">
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2">
+              <Search size={18} className="text-slate-400" />
+            </span>
+            <input
+              type="text"
+              placeholder="Type to search..."
+              className="w-full bg-slate-50 pl-11 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+            />
+          </div>
+        </div>
 
-              <div className="my-1 border-t border-gray-50"></div>
-              
-              <LogoutButton />
+        <div className="flex items-center gap-3 2xsm:gap-7">
+          <ul className="flex items-center gap-2 2xsm:gap-4">
+            <li>
+              <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition-colors">
+                <Bell size={20} />
+                <span className="absolute top-2.5 right-3 h-2 w-2 rounded-full bg-red-500 border-2 border-white"></span>
+              </button>
+            </li>
+          </ul>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden text-right lg:block">
+              <span className="block text-sm font-semibold text-slate-800">User Name</span>
+              <span className="block text-[11px] font-medium text-slate-500 uppercase tracking-tight">Admin Role</span>
             </div>
-          )}
+            <div className="h-10 w-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center overflow-hidden">
+               <User size={24} className="text-slate-500 translate-y-1" />
+            </div>
+          </div>
         </div>
       </div>
     </header>
