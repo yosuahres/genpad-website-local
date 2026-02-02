@@ -1,15 +1,9 @@
-
 "use client";
 
 import { useState } from "react";
 import { createClient } from "../../../../utils/supabase/client";
 
-interface AddRoleFormProps {
-  onSuccess: () => void;
-  onCancel: () => void;
-}
-
-export function AddRoleForm({ onSuccess, onCancel }: AddRoleFormProps) {
+export function AddRoleForm({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: () => void }) {
   const supabase = createClient();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,25 +14,22 @@ export function AddRoleForm({ onSuccess, onCancel }: AddRoleFormProps) {
     const { error } = await supabase.from("roles").insert([{ name }]);
     setLoading(false);
     if (!error) onSuccess();
+    else alert(error.message);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Role Name</label>
-        <input
-          type="text"
-          required
-          className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Moderator"
-        />
+        <label className="block text-sm font-bold text-black mb-2 uppercase tracking-wide">Role Name</label>
+        <input type="text" required className="w-full px-4 py-3 border border-gray-300 rounded-xl text-black bg-white focus:ring-2 focus:ring-blue-500 outline-none font-medium" 
+          placeholder="e.g. Moderator" value={name} onChange={(e) => setName(e.target.value)} />
       </div>
-      <div className="flex gap-3 pt-4">
-        <button type="button" onClick={onCancel} className="flex-1 py-2 border border-gray-200 rounded-xl font-semibold">Cancel</button>
-        <button type="submit" disabled={loading} className="flex-1 py-2 bg-blue-600 text-white rounded-xl font-semibold disabled:bg-gray-400">
-          {loading ? "Saving..." : "Save Role"}
+      <div className="flex gap-4 pt-6 border-t border-gray-100">
+        <button type="button" onClick={onCancel} className="flex-1 py-4 border border-gray-300 text-black font-bold rounded-xl hover:bg-gray-50 transition-all">
+          CANCEL
+        </button>
+        <button type="submit" disabled={loading} className="flex-1 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg">
+          {loading ? "SAVING..." : "SAVE ROLE"}
         </button>
       </div>
     </form>

@@ -22,21 +22,24 @@ export default function RolesPage() {
 
   useEffect(() => { fetchData(); }, []);
 
+  const filtered = data.filter(i => i.name?.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <>
       <DataTablePage
         title="System Roles"
         description="Define access levels and permissions."
-        columns={["Role Name"]}
+        columns={["ID", "Role Name"]}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         onAddClick={() => setIsModalOpen(true)}
         loading={loading}
       >
-        {data.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase())).map((item) => (
+        {filtered.map((item) => (
           <tr key={item.id} className="hover:bg-blue-50/30">
+            <td className="px-8 py-5 text-sm text-gray-500">#{item.id}</td>
             <td className="px-8 py-5">
-              <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold uppercase">
+              <span className="bg-purple-50 text-purple-700 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider">
                 {item.name}
               </span>
             </td>

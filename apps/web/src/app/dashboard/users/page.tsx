@@ -57,6 +57,20 @@ export default function UsersPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen space-y-4">
+        <p className="text-red-500 font-medium">Error: {error}</p>
+        <button
+          onClick={fetchUsers}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all active:scale-95"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full p-6 lg:p-10">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">

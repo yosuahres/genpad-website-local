@@ -11,52 +11,33 @@ export function AddRegionForm({ onSuccess, onCancel }: { onSuccess: () => void; 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
     const { error } = await supabase.from("regions").insert([formData]);
-    
     setLoading(false);
     if (!error) onSuccess();
+    else alert(error.message);
   };
 
+  const inputClass = "w-full px-4 py-3 border border-gray-300 rounded-xl text-black bg-white focus:ring-2 focus:ring-blue-500 outline-none font-medium";
+  const labelClass = "block text-sm font-bold text-black mb-2 uppercase tracking-wide";
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Region Name</label>
-        <input
-          type="text"
-          required
-          className="w-full px-4 py-2 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="e.g. Jawa Barat"
-        />
+        <label className={labelClass}>Region Name</label>
+        <input type="text" required className={inputClass} placeholder="e.g. Jawa Barat"
+          value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
       </div>
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-1">Region Code</label>
-        <input
-          type="text"
-          required
-          className="w-full px-4 py-2 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
-          value={formData.code}
-          onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-          placeholder="e.g. JBR"
-        />
+        <label className={labelClass}>Region Code</label>
+        <input type="text" required className={inputClass} placeholder="e.g. JBR"
+          value={formData.code} onChange={(e) => setFormData({...formData, code: e.target.value})} />
       </div>
-      
-      <div className="flex gap-3 pt-4">
-        <button 
-          type="button" 
-          onClick={onCancel} 
-          className="flex-1 py-2 border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 active:scale-95 transition-all"
-        >
-          Cancel
+      <div className="flex gap-4 pt-6 border-t border-gray-100">
+        <button type="button" onClick={onCancel} className="flex-1 py-4 border border-gray-300 text-black font-bold rounded-xl hover:bg-gray-50 transition-all">
+          CANCEL
         </button>
-        <button 
-          type="submit" 
-          disabled={loading} 
-          className="flex-1 py-2 bg-blue-600 text-white rounded-xl font-semibold disabled:bg-gray-400 hover:bg-blue-700 active:scale-95 transition-all shadow-md shadow-blue-200"
-        >
-          {loading ? "Saving..." : "Save Region"}
+        <button type="submit" disabled={loading} className="flex-1 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg">
+          {loading ? "SAVING..." : "SAVE REGION"}
         </button>
       </div>
     </form>

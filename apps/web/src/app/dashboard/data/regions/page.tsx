@@ -23,8 +23,8 @@ export default function RegionsPage() {
   useEffect(() => { fetchData(); }, []);
 
   const filtered = data.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    item.code.toLowerCase().includes(searchTerm.toLowerCase())
+    item.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    item.code?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -32,14 +32,15 @@ export default function RegionsPage() {
       <DataTablePage
         title="Regions"
         description="Manage geographical areas and regional codes."
-        columns={["Code", "Name"]}
+        columns={["ID", "Code", "Name"]}
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         onAddClick={() => setIsModalOpen(true)}
         loading={loading}
       >
         {filtered.map((item) => (
-          <tr key={item.id} className="hover:bg-blue-50/30 transition-all group">
+          <tr key={item.id} className="hover:bg-blue-50/30 transition-all">
+            <td className="px-8 py-5 text-sm text-gray-500">#{item.id}</td>
             <td className="px-8 py-5 font-mono text-blue-600 font-bold">{item.code}</td>
             <td className="px-8 py-5 font-semibold text-gray-900">{item.name}</td>
             <td className="px-8 py-5 text-right">
