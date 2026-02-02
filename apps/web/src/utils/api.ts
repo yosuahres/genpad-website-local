@@ -8,12 +8,12 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     error: sessionError,
   } = await supabase.auth.getSession();
 
+  // 1. Check for session existence
   if (sessionError || !session) {
-    throw new Error('User session not found. Please log in.');
+    throw new Error('AUTH_SESSION_MISSING');
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  
   const url = `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
   const response = await fetch(url, {
@@ -25,13 +25,14 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     },
   });
 
+  // 2. Handle 401 specifically for expired/invalid tokens
   if (response.status === 401) {
-    console.error('Unauthorized request - session might be expired');
+    throw new Error('AUTH_UNAUTHORIZED');
   }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
+    throw new Error(errorData.message || `Error: ${response.status}`);
   }
 
   return response.json();

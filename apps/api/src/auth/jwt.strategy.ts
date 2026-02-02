@@ -1,3 +1,4 @@
+// apps/api/src/auth/jwt.strategy.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -21,12 +22,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('SUPABASE_JWT_SECRET'),
+      jsonWebTokenOptions: {
+        ignoreNotBefore: true, 
+      },
     });
   }
 
   async validate(payload: any) {
+    console.log('JWT Payload received:', payload); // If this doesn't show up, check your SECRET
     const supabase = this.supabaseService.getClient();
-    
+
     // Cast the response to our interface to stop the 'never' error
     const { data, error } = await supabase
       .from('users')
