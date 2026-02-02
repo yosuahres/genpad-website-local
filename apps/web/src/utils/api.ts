@@ -13,8 +13,10 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  const url = `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
-  const response = await fetch(`${baseUrl}${endpoint}`, {
+  const response = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -23,9 +25,13 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     },
   });
 
+  if (response.status === 401) {
+    console.error('Unauthorized request - session might be expired');
+  }
+
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Failed to fetch data from backend.');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error: ${response.status} ${response.statusText}`);
   }
 
   return response.json();

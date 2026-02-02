@@ -1,4 +1,3 @@
-// apps/web/src/components/Layouts/sidebar/Sidebar.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -8,7 +7,7 @@ import { ChevronLeft, ChevronRight, ChevronDown, ShieldCheck, X } from 'lucide-r
 import { ADMIN_MENU, SUPERADMIN_MENU, ROLE_IDS } from '../../../constants/navigation';
 
 interface SidebarProps {
-  sidebarOpen: boolean; // Mobile state
+  sidebarOpen: boolean; 
   setSidebarOpen: (arg: boolean) => void;
   roleId: number;
 }
@@ -27,7 +26,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
 
   return (
     <>
-      {/* Mobile Overlay */}
       <div className={`fixed inset-0 z-[9998] bg-black/50 lg:hidden transition-opacity ${sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onClick={() => setSidebarOpen(false)} />
 
       <aside className={`fixed left-0 top-0 z-[9999] h-screen bg-[#0F1115] text-white transition-all duration-300 border-r border-white/10 lg:static ${isCollapsed ? 'w-20' : 'w-72'} ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
