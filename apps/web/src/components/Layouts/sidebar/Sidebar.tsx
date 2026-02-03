@@ -43,7 +43,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
             <div key={item.name}>
               {item.subItems ? (
                 <>
-                  <button onClick={() => toggleSubMenu(item.name)} className={`w-full flex items-center p-3 rounded-xl transition-colors hover:bg-white/5 ${openMenus[item.name] && !isCollapsed ? 'text-indigo-400' : 'text-slate-400'}`}>
+                  <button onClick={() => toggleSubMenu(item.name)} className={`w-full flex items-center p-3 rounded-xl transition-colors hover:bg-white/5 ${openMenus[item.name] && !isCollapsed ? 'text-indigo-400' : 'text-black'}`}>
                     <item.icon size={20} />
                     {!isCollapsed && (
                       <>
@@ -55,7 +55,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
                   {!isCollapsed && openMenus[item.name] && (
                     <div className="ml-9 mt-1 space-y-1 border-l border-white/10 pl-4">
                       {item.subItems.map(sub => (
-                        <Link key={sub.path} href={sub.path} className="block p-2 text-sm text-slate-500 hover:text-indigo-400 transition-colors">
+                        <Link key={sub.path} href={sub.path} className="block p-2 text-sm text-black hover:text-indigo-400 transition-colors">
                           {sub.name}
                         </Link>
                       ))}
@@ -63,7 +63,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
                   )}
                 </>
               ) : (
-                <Link href={item.path!} className={`flex items-center p-3 rounded-xl transition-all ${pathname === item.path ? 'bg-indigo-600/10 text-indigo-400' : 'text-slate-400 hover:bg-white/5'}`}>
+                <Link href={item.path!} className={`flex items-center p-3 rounded-xl transition-all ${pathname === item.path ? 'bg-indigo-600/10 text-indigo-400' : 'text-black hover:bg-white/5'}`}>
                   <item.icon size={20} />
                   {!isCollapsed && <span className="ml-3 text-sm font-medium">{item.name}</span>}
                 </Link>

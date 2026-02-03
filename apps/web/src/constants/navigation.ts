@@ -27,7 +27,7 @@ export const ADMIN_MENU: NavItem[] = [
 ];
 
 export const SUPERADMIN_MENU: NavItem[] = [
-  { name: 'User Management', path: '/dashboard/users', icon: UserPlus },
+  { name: 'Admin Management', path: '/dashboard/superadmin/users', icon: UserPlus },
   { name: 'System Config', path: '/dashboard/superadmin/config', icon: Settings },
   { name: 'Audit Logs', path: '/dashboard/superadmin/logs', icon: History },
 ];

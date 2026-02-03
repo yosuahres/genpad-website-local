@@ -20,23 +20,20 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Step 1: Supabase Auth
       const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
       if (authError) throw authError;
 
       if (data.user) {
-        // Step 2: Validate against NestJS and get Role
-        // This will throw AUTH_UNAUTHORIZED if the user record doesn't exist in NestJS
         const userProfile = await fetchFromBackend('/auth/profile'); 
 
-        // Step 3: Route based on string role from NestJS
-        if (userProfile.role === 'superadmin') {
+        console.log('User profile fetched:', userProfile); // Debugging log
+        if (userProfile.role === 'super_admin') {
           router.push('/dashboard/superadmin');
         } else if (userProfile.role === 'admin') {
           router.push('/dashboard/admin');
         } else {
           await supabase.auth.signOut();
-          throw new Error('Access denied: Management account required.');
+          throw new Error('Access denied: Management account required.'); 
         }
         
         router.refresh();

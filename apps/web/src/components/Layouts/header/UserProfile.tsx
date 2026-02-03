@@ -48,10 +48,10 @@ const UserProfile = () => {
   return (
     <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
       <div className="hidden text-right md:block">
-        <p className="text-sm font-semibold text-slate-800 leading-tight">
+        <p className="text-sm font-semibold text-black leading-tight">
           {userData?.name || "Unknown User"}
         </p>
-        <p className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+        <p className="text-[10px] font-medium text-black uppercase tracking-wider">
           {userData ? getRoleLabel(userData.role_id) : "Guest"}
         </p>
       </div>

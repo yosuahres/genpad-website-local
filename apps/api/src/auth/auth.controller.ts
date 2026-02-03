@@ -6,7 +6,7 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Get('profile')
   getProfile(@Request() req) {
-    // req.user contains { id, email, role } from your JwtStrategy
+    // req.user contains { id, email, role } from JwtStrategy
     return req.user;
   }
 }
