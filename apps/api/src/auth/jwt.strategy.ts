@@ -1,11 +1,11 @@
-// apps/api/src/auth/jwt.strategy.ts
+
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ConfigService } from '@nestjs/config';
 
-// Explicitly define the database response structure
+
 interface UserWithRole {
   id: string;
   email: string;
@@ -29,10 +29,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    console.log('JWT Payload received:', payload); // If this doesn't show up, check your SECRET
+    console.log('JWT Payload received:', payload); 
     const supabase = this.supabaseService.getClient();
 
-    // Cast the response to our interface to stop the 'never' error
+    
     const { data, error } = await supabase
       .from('users')
       .select('id, email, roles(name)')
@@ -40,7 +40,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       .single() as { data: UserWithRole | null; error: any };
 
     if (error) {
-        console.error('Database Query Error:', error); // THIS WILL TELL US WHY IT 404s
+        console.error('Database Query Error:', error); 
         throw new UnauthorizedException(`Database error: ${error.message}`);
     }
 
@@ -49,8 +49,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('User record not found in database');
     }
 
-    // Extract the role name safely from either an array or an object
-    let roleName = 'user'; // default
+    
+    let roleName = 'user'; 
     if (data.roles) {
       if (Array.isArray(data.roles)) {
         roleName = data.roles[0]?.name;

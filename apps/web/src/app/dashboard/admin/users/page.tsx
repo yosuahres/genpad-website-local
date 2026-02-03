@@ -1,3 +1,4 @@
+// apps/web/src/app/dashboard/admin/users/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -8,16 +9,15 @@ import { Trash2, Edit, UserPlus } from 'lucide-react';
 import { Modal } from "../../../../components/common/modal";
 import { UserForm } from "../../../../components/dashboard/userform";
 
-export default function UserManagementPage() {
+export default function PengurusLokalPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editUser, setEditUser] = useState<any>(null);
   const [formData, setFormData] = useState({ email: '', name: '', password: '' });
 
-  // 1. Pass roleId=2 to filter only Admins
   const loadUsers = async () => {
     try {
-      const data = await fetchFromBackend(`/users?roleId=${ROLE_IDS.ADMIN}`);
+      const data = await fetchFromBackend('/users?roleId=3'); 
       setUsers(data || []);
     } catch (err) {
       console.error("Fetch error:", err);
@@ -31,10 +31,9 @@ export default function UserManagementPage() {
     const method = editUser ? 'PUT' : 'POST';
     const url = editUser ? `/users/${editUser.id}` : '/users';
     
-    // 2. Explicitly send ROLE_IDS.ADMIN (2) when creating
     const body = editUser 
       ? { name: formData.name } 
-      : { ...formData, role_id: ROLE_IDS.ADMIN };
+      : { ...formData, role_id: ROLE_IDS.PENGURUS_LOKAL };
 
     try {
       await fetchFromBackend(url, { method, body: JSON.stringify(body) });
@@ -46,7 +45,7 @@ export default function UserManagementPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Permanently delete this admin from Auth and Database?")) return;
+    if (!confirm("Permanently delete this account?")) return;
     try {
       await fetchFromBackend(`/users/${id}`, { method: 'DELETE' });
       loadUsers();
@@ -62,14 +61,14 @@ export default function UserManagementPage() {
   };
 
   return (
-    <DashboardLayout roleId={ROLE_IDS.SUPERADMIN}>
+    <DashboardLayout roleId={ROLE_IDS.ADMIN}>
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold text-black">Admin Management</h2>
+        <h2 className="text-2xl font-bold text-black">Pengurus Lokal Management</h2>
         <button 
           onClick={() => setIsModalOpen(true)}
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-sm transition-all"
         >
-          <UserPlus size={18} /> Add New Admin
+          <UserPlus size={18} /> Add Pengurus
         </button>
       </div>
 
@@ -108,7 +107,11 @@ export default function UserManagementPage() {
         </table>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={closeModal} title={editUser ? "Edit Admin" : "Create Admin"}>
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+        title={editUser ? "Edit Pengurus" : "Create Pengurus"}
+      >
         <UserForm 
           formData={formData} 
           setFormData={setFormData} 

@@ -52,7 +52,7 @@ export default function LoginPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-gray-100">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">Management Login</h1>
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-8">Genpad</h1>
         
         {error && (
           <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-200">

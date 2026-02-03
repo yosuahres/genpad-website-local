@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronLeft, ChevronRight, ChevronDown, ShieldCheck, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, X } from 'lucide-react';
 import { ADMIN_MENU, SUPERADMIN_MENU, ROLE_IDS } from '../../../constants/navigation';
 
 interface SidebarProps {
@@ -26,7 +26,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
 
   return (
     <>
-      <div className={`fixed inset-0 z-[9998] bg-black/50 lg:hidden transition-opacity ${sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onClick={() => setSidebarOpen(false)} />
+      <div 
+        className={`fixed inset-0 z-[9998] bg-black/50 lg:hidden transition-opacity ${sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`} 
+        onClick={() => setSidebarOpen(false)} 
+      />
 
       <aside className={`fixed left-0 top-0 z-[9999] h-screen bg-[#0F1115] text-white transition-all duration-300 border-r border-white/10 lg:static ${isCollapsed ? 'w-20' : 'w-72'} ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         
@@ -43,7 +46,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
             <div key={item.name}>
               {item.subItems ? (
                 <>
-                  <button onClick={() => toggleSubMenu(item.name)} className={`w-full flex items-center p-3 rounded-xl transition-colors hover:bg-white/5 ${openMenus[item.name] && !isCollapsed ? 'text-indigo-400' : 'text-black'}`}>
+                  <button 
+                    onClick={() => toggleSubMenu(item.name)} 
+                    className={`w-full flex items-center p-3 rounded-xl transition-colors hover:bg-white/5 ${openMenus[item.name] && !isCollapsed ? 'text-indigo-400' : 'text-gray-400'}`}
+                  >
                     <item.icon size={20} />
                     {!isCollapsed && (
                       <>
@@ -55,7 +61,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
                   {!isCollapsed && openMenus[item.name] && (
                     <div className="ml-9 mt-1 space-y-1 border-l border-white/10 pl-4">
                       {item.subItems.map(sub => (
-                        <Link key={sub.path} href={sub.path} className="block p-2 text-sm text-black hover:text-indigo-400 transition-colors">
+                        <Link 
+                          key={sub.path} 
+                          href={sub.path} 
+                          className="block p-2 text-sm text-gray-400 hover:text-indigo-400 transition-colors"
+                        >
                           {sub.name}
                         </Link>
                       ))}
@@ -63,7 +73,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
                   )}
                 </>
               ) : (
-                <Link href={item.path!} className={`flex items-center p-3 rounded-xl transition-all ${pathname === item.path ? 'bg-indigo-600/10 text-indigo-400' : 'text-black hover:bg-white/5'}`}>
+                <Link 
+                  href={item.path!} 
+                  className={`flex items-center p-3 rounded-xl transition-all ${pathname === item.path ? 'bg-indigo-600/10 text-indigo-400' : 'text-gray-400 hover:bg-white/5'}`}
+                >
                   <item.icon size={20} />
                   {!isCollapsed && <span className="ml-3 text-sm font-medium">{item.name}</span>}
                 </Link>

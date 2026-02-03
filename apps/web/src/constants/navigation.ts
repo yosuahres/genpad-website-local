@@ -1,7 +1,9 @@
 // apps/web/src/constants/navigation.ts
 import { 
   LayoutDashboard, Baby, FileText, Users, Map, 
-  Settings, History, UserPlus, List, LucideIcon 
+  Settings, History, UserPlus, List, LucideIcon, 
+  Calendar,
+  UserRoundSearch
 } from 'lucide-react';
 
 export interface NavItem {
@@ -11,16 +13,22 @@ export interface NavItem {
   subItems?: { name: string; path: string; icon: LucideIcon }[];
 }
 
-export const ROLE_IDS = { SUPERADMIN: 1, ADMIN: 2 } as const;
+export const ROLE_IDS = { 
+  SUPERADMIN: 1, 
+  ADMIN: 2,
+  PENGURUS_LOKAL: 3
+} as const;
 
 export const ADMIN_MENU: NavItem[] = [
-  { name: 'Dashboard', path: '/dashboard/admin', icon: LayoutDashboard },
+  { name: 'Pengurus Lokal Management', path: '/dashboard/admin/users', icon: UserRoundSearch },
   { 
-    name: 'Master Data', 
+    name: 'Data Control', 
     icon: List,
     subItems: [
-      { name: 'Anak Asuh', path: '/dashboard/data/anak-asuh', icon: Baby },
       { name: 'Regions', path: '/dashboard/data/regions', icon: Map },
+      { name: 'Tahun Ajaran', path: '/dashboard/data/academic-years', icon: Calendar },
+      { name: 'Template Card', path: '/dashboard/data/template-cards', icon: FileText },
+      { name: 'Anak Asuh', path: '/dashboard/data/anak-asuh', icon: Baby },
     ]
   },
   { name: 'Rapor Anak', path: '/dashboard/reports', icon: FileText },
