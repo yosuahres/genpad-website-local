@@ -39,8 +39,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       .eq('id', payload.sub)
       .single() as { data: UserWithRole | null; error: any };
 
-    if (error || !data) {
-      throw new UnauthorizedException('User record or role not found');
+    if (error) {
+        console.error('Database Query Error:', error); // THIS WILL TELL US WHY IT 404s
+        throw new UnauthorizedException(`Database error: ${error.message}`);
+    }
+
+    if (!data) {
+        console.error('No user record found for ID:', payload.sub);
+        throw new UnauthorizedException('User record not found in database');
     }
 
     // Extract the role name safely from either an array or an object

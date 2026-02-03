@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from "next/link";
-import { createClient } from "~/utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
 
 interface Notification {
   id: string;

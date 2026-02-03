@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Menu, Search, User } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
 import LogoutButton from './LogoutButton';
-import { createClient } from "~/utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
 
 export default function Header({ setSidebarOpen }: { setSidebarOpen: (arg: boolean) => void }) {
   const [profile, setProfile] = useState<{name: string, role_id: number} | null>(null);

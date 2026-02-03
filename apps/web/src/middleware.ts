@@ -24,7 +24,6 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
-  // 1. Guest trying to access dashboard
   if (!user && pathname.startsWith('/dashboard')) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
@@ -38,17 +37,14 @@ export async function middleware(request: NextRequest) {
 
     const role = Array.isArray(userData?.roles) ? userData?.roles[0]?.name : userData?.roles?.name;
 
-    // 2. Logged in but record not synced yet or no permission
     if (!role && pathname.startsWith('/dashboard')) {
       return NextResponse.redirect(new URL('/login?error=unauthorized', request.url));
     }
 
-    // 3. Admin restricted to Admin Dashboard
     if (role === 'admin' && pathname.startsWith('/dashboard/superadmin')) {
       return NextResponse.redirect(new URL('/dashboard/admin', request.url));
     }
 
-    // 4. Superadmin restricted to Superadmin Dashboard
     if (role === 'superadmin' && pathname.startsWith('/dashboard/admin')) {
       return NextResponse.redirect(new URL('/dashboard/superadmin', request.url));
     }

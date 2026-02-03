@@ -1,8 +1,7 @@
-//components/Layouts/header/LogoutButton.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
-import { createClient } from "~/utils/supabase/client";
+import { createClient } from "../../../utils/supabase/client";
 import { useState } from "react";
 
 export default function LogoutButton() {
@@ -17,7 +16,10 @@ export default function LogoutButton() {
     if (error) {
       console.error("Error during logout:", error.message);
     } else {
-      router.push("/");
+      // Redirect to the login page specifically
+      router.push("/login");
+      
+      // Refresh to ensure all auth state and cookies are cleared across the app
       router.refresh(); 
     }
     setLoading(false);
