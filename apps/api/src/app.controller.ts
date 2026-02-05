@@ -13,14 +13,32 @@ export class AppController {
   ) {}
 
   @Get()
-  async getUsers(@Query('roleId') roleId?: string) {
-    const query = this.supabaseService.getClient().from('users').select('*');
+  async getUsers(
+    @Query('roleId') roleId?: string,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
+  ) {
+    const p = parseInt(page);
+    const l = parseInt(limit);
+    const from = (p - 1) * l;
+    const to = from + l - 1;
+
+    // Use count: 'exact' to get total records for pagination UI
+    const query = this.supabaseService.getClient()
+      .from('users')
+      .select('*', { count: 'exact' });
+
     if (roleId) {
       query.eq('role_id', parseInt(roleId));
     }
-    const { data, error } = await query;
+
+    const { data, error, count } = await query
+      .range(from, to)
+      .order('name', { ascending: true });
+
     if (error) throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    return data;
+    
+    return { data, total: count };
   }
 
   @Post()
