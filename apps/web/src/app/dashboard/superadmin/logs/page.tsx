@@ -66,7 +66,7 @@ export default function AuditLogsPage() {
         <div className="flex px-6 py-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
           <div className="w-8"></div>
           <div className="flex-1">Description</div>
-          <div className="w-48 text-right pr-4">Admin</div>
+          <div className="w-48 text-right pr-4">Change by</div>
           <div className="w-48 text-right">Date & Time</div>
         </div>
 

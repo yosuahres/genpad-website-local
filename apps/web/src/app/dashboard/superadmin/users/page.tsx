@@ -69,16 +69,27 @@ export default function UserManagementPage() {
     }
   };
 
+  const formatDateTimeUTC = (dateString: string) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const yyyy = date.getUTCFullYear();
+    const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const dd = String(date.getUTCDate()).padStart(2, '0');
+    const hh = String(date.getUTCHours()).padStart(2, '0');
+    const min = String(date.getUTCMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  };
+
   return (
     <DashboardLayout roleId={ROLE_IDS.SUPERADMIN}>
       <div className="mb-6 px-4">
-        <h2 className="text-3xl font-bold text-black mb-8 tracking-tight">Admin Management</h2>
+        <h2 className="text-xl font-bold text-black mb-8 tracking-tight">Admin Management</h2>
         
         <div className="bg-white border border-slate-200 overflow-hidden shadow-sm">
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-100/80">
               <tr className="border-b border-slate-200">
-                <th colSpan={3} className="py-4 px-6">
+                <th colSpan={4} className="py-4 px-6">
                   <div className="flex items-center gap-6">
                     <button onClick={() => setIsModalOpen(true)} className="flex items-center gap-2 text-xs font-black uppercase text-slate-600 hover:text-black tracking-widest transition-colors">
                       <Plus size={18} /> Add New
@@ -112,7 +123,8 @@ export default function UserManagementPage() {
                   )}
                 </th>
                 <th className="py-4 px-6 text-[11px] font-extrabold uppercase text-slate-500 tracking-widest border-r border-slate-200">Name</th>
-                <th className="py-4 px-6 text-[11px] font-extrabold uppercase text-slate-500 tracking-widest">Email Address</th>
+                <th className="py-4 px-6 text-[11px] font-extrabold uppercase text-slate-500 tracking-widest border-r border-slate-200">Email Address</th>
+                <th className="py-4 px-6 text-[11px] font-extrabold uppercase text-slate-500 tracking-widest">Created At (UTC)</th>
               </tr>
             </thead>
 
@@ -130,8 +142,9 @@ export default function UserManagementPage() {
                         {isSelected ? <CheckSquare2Icon size={18} className="text-blue-600" /> : <Square size={18} className="text-slate-300 group-hover:text-blue-400" />}
                       </div>
                     </td>
-                    <td className={`py-5 px-6 text-sm ${isSelected ? "font-bold text-black" : "text-slate-800"}`}>{user.name}</td>
-                    <td className={`py-5 px-6 text-sm ${isSelected ? "text-black" : "text-slate-600"}`}>{user.email}</td>
+                    <td className={`py-5 px-6 text-sm border-r border-slate-100 ${isSelected ? "font-bold text-black" : "text-slate-800"}`}>{user.name}</td>
+                    <td className={`py-5 px-6 text-sm border-r border-slate-100 ${isSelected ? "text-black" : "text-slate-600"}`}>{user.email}</td>
+                    <td className={`py-5 px-6 text-sm ${isSelected ? "text-black" : "text-slate-600"}`}>{formatDateTimeUTC(user.created_at)}</td>
                   </tr>
                 );
               })}
