@@ -65,6 +65,9 @@ importers:
       '@nestjs/jwt':
         specifier: ^11.0.2
         version: 11.0.2(@nestjs/common@11.1.12)
+      '@nestjs/mapped-types':
+        specifier: ^2.1.0
+        version: 2.1.0(@nestjs/common@11.1.12)(class-validator@0.14.3)(reflect-metadata@0.2.2)
       '@nestjs/passport':
         specifier: ^11.0.5
         version: 11.0.5(@nestjs/common@11.1.12)(passport@0.7.0)
@@ -80,6 +83,9 @@ importers:
       class-validator:
         specifier: ^0.14.3
         version: 0.14.3
+      mapped-types:
+        specifier: ^0.0.1
+        version: 0.0.1
       passport:
         specifier: ^0.7.0
         version: 0.7.0
@@ -2349,6 +2355,24 @@ packages:
       '@nestjs/common': 11.1.12(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@types/jsonwebtoken': 9.0.10
       jsonwebtoken: 9.0.3
+    dev: false
+
+  /@nestjs/mapped-types@2.1.0(@nestjs/common@11.1.12)(class-validator@0.14.3)(reflect-metadata@0.2.2):
+    resolution: {integrity: sha512-W+n+rM69XsFdwORF11UqJahn4J3xi4g/ZEOlJNL6KoW5ygWSmBB2p0S2BZ4FQeS/NDH72e6xIcu35SfJnE8bXw==}
+    peerDependencies:
+      '@nestjs/common': ^10.0.0 || ^11.0.0
+      class-transformer: ^0.4.0 || ^0.5.0
+      class-validator: ^0.13.0 || ^0.14.0
+      reflect-metadata: ^0.1.12 || ^0.2.0
+    peerDependenciesMeta:
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+    dependencies:
+      '@nestjs/common': 11.1.12(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      class-validator: 0.14.3
+      reflect-metadata: 0.2.2
     dev: false
 
   /@nestjs/passport@11.0.5(@nestjs/common@11.1.12)(passport@0.7.0):
@@ -9178,6 +9202,11 @@ packages:
     dependencies:
       tmpl: 1.0.5
     dev: true
+
+  /mapped-types@0.0.1:
+    resolution: {integrity: sha512-9WtZd+/WCFNmkLJh5LdEFQq4QJJ60E+H86Xus35D5DjyuD6O15F9OFOaGLkBJscJWh91WIzYv1OWZhrHslm3fg==}
+    engines: {node: '>= 4'}
+    dev: false
 
   /math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}

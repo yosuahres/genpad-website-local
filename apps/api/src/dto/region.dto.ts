@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsUppercase, Length } from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
 
 export class CreateRegionDto {
   @IsString()
@@ -7,7 +8,9 @@ export class CreateRegionDto {
 
   @IsString()
   @IsNotEmpty()
-  code: string;
+  @IsUppercase()
+  @Length(2, 5)
+  code: string; // Enforcing code standards (e.g., "US", "ID-JK")
 }
 
-export class UpdateRegionDto extends CreateRegionDto {}
+export class UpdateRegionDto extends PartialType(CreateRegionDto) {}

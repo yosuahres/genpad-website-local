@@ -1,30 +1,34 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+// apps/api/src/regions/regions.controller.ts
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { RegionsService } from './regions.service';
 import { CreateRegionDto, UpdateRegionDto } from '../dto/region.dto';
-import { JwtAuthGuard } from '../auth.guard';
+import { AuthGuard } from '../auth.guard';
 
 @Controller('regions')
-@UseGuards(JwtAuthGuard) // Protect routes with your existing JWT guard
+@UseGuards(AuthGuard)
 export class RegionsController {
   constructor(private readonly regionsService: RegionsService) {}
 
   @Get()
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
+  async findAll(
+    @Query('page', new ParseIntPipe({ optional: true })) page = 1,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit = 10,
+  ) {
     return this.regionsService.findAll(page, limit);
   }
 
   @Post()
-  create(@Body() dto: CreateRegionDto) {
+  async create(@Body() dto: CreateRegionDto) {
     return this.regionsService.create(dto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateRegionDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateRegionDto) {
     return this.regionsService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.regionsService.remove(id);
   }
 }
