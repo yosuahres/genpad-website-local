@@ -25,16 +25,16 @@ export const ADMIN_MENU: NavItem[] = [
     name: 'Data Control', 
     icon: List,
     subItems: [
-      { name: 'Regions', path: '/dashboard/data/regions', icon: Map },
-      { name: 'Tahun Ajaran', path: '/dashboard/data/academic-years', icon: Calendar },
-      { name: 'Template Card', path: '/dashboard/data/template-cards', icon: FileText },
-      { name: 'Anak Asuh', path: '/dashboard/data/anak-asuh', icon: Baby },
+      { name: 'Regions', path: '/dashboard/admin/data/regions', icon: Map },
+      { name: 'Tahun Ajaran', path: '/dashboard/admin/data/academic-years', icon: Calendar },
+      { name: 'Template Card', path: '/dashboard/admin/data/template-cards', icon: FileText },
+      { name: 'Anak Asuh', path: '/dashboard/admin/data/anak-asuh', icon: Baby },
     ]
   },
   { name: 'Rapor Anak', path: '/dashboard/reports', icon: FileText },
 ];
 
-export const SUPERADMIN_MENU: NavItem[] = [
+export const SUPERADMIN_MENU: NavItem[] = [ 
   { name: 'Admin Management', path: '/dashboard/superadmin/users', icon: UserPlus },
   { name: 'System Config', path: '/dashboard/superadmin/config', icon: Settings },
   { name: 'Audit Logs', path: '/dashboard/superadmin/logs', icon: History },
