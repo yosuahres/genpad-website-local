@@ -21,9 +21,8 @@ export default function SuperAdminPage() {
   useEffect(() => {
     async function getStats() {
       try {
-        // Replace with your actual statistics endpoint
-        const data = await fetchFromBackend("/stats/superadmin-overview");
-        setStats(data);
+        // const data = await fetchFromBackend("/stats/superadmin-overview");
+        // setStats(data);
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       } finally {

@@ -8,7 +8,6 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     error: sessionError,
   } = await supabase.auth.getSession();
 
-  // 1. Check for session existence
   if (sessionError || !session) {
     throw new Error('AUTH_SESSION_MISSING');
   }
@@ -25,7 +24,6 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     },
   });
 
-  // 2. Handle 401 specifically for expired/invalid tokens
   if (response.status === 401) {
     throw new Error('AUTH_UNAUTHORIZED');
   }

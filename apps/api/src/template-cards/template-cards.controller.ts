@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { TemplateCardsService } from './template-cards.service';
 import { CreateTemplateCardDto, UpdateTemplateCardDto } from '../dto/template-card.dto';
-import { AuthGuard } from '../auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('template-cards')
 @UseGuards(AuthGuard) 

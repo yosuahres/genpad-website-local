@@ -9,7 +9,7 @@ import {
   Download // 1. Added Download icon
 } from 'lucide-react';
 import { Modal } from "../../../../components/common/modal";
-import { UserForm } from "../../../../components/dashboard/userform";
+import { UserForm } from "../../../../components/common/form";
 import { Pagination } from "../../../../components/common/pagination";
 import { exportToExcel } from "../../../../utils/exportutils"; // 2. Added export utility
 

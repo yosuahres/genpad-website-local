@@ -2,7 +2,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { AcademicYearsService } from './academic-years.service';
 import { CreateAcademicYearDto, UpdateAcademicYearDto } from '../dto/academicyears.dto';
-import { AuthGuard } from '../auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('academic-years')
 @UseGuards(AuthGuard)

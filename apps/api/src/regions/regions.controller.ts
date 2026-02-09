@@ -2,7 +2,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { RegionsService } from './regions.service';
 import { CreateRegionDto, UpdateRegionDto } from '../dto/region.dto';
-import { AuthGuard } from '../auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('regions')
 @UseGuards(AuthGuard)

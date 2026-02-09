@@ -1,12 +1,12 @@
 // apps/web/src/components/Layouts/sidebar/Sidebar.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react'; // Added useEffect
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronLeft, ChevronRight, ChevronDown, X, User } from 'lucide-react'; // Added User icon
+import { ChevronLeft, ChevronRight, ChevronDown, X, User } from 'lucide-react';
 import { ADMIN_MENU, SUPERADMIN_MENU, ROLE_IDS } from '../../../constants/navigation';
-import { createClient } from "../../../utils/supabase/client"; // Import supabase
+import { createClient } from "../../../utils/supabase/client";
 
 interface SidebarProps {
   sidebarOpen: boolean; 
@@ -18,8 +18,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
-  const [profileName, setProfileName] = useState<string | null>(null); // State for name
+  const [profileName, setProfileName] = useState<string | null>(null);
   const supabase = createClient();
+
+  // Determine the home path based on roleId
+  const homePath = roleId === ROLE_IDS.SUPERADMIN ? '/dashboard/superadmin' : '/dashboard/admin';
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -49,14 +52,18 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
       <aside className={`fixed left-0 top-0 z-[9999] h-screen bg-[#4b545c] text-white transition-all duration-300 border-r border-white/10 lg:static ${isCollapsed ? 'w-20' : 'w-72'} ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         
         <div className="p-6 flex items-center justify-between">
-          {!isCollapsed && <span className="font-bold text-xl tracking-tight text-white">Genpad</span>}
+          {!isCollapsed && (
+            <Link href={homePath} className="font-bold text-xl tracking-tight text-white hover:opacity-80 transition-opacity">
+              Genpad
+            </Link>
+          )}
           <button onClick={() => setIsCollapsed(!isCollapsed)} className="hidden lg:block p-1.5 rounded-lg bg-white/5 hover:bg-white/10">
             {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white"><X size={20} /></button>
         </div>
 
-        {/* --- PROFILE SECTION START --- */}
+        {/* ... Profile and Nav sections remain the same ... */}
         <div className={`px-6 py-4 mb-4 border-b border-white/10 flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
           <div className="h-10 w-10 shrink-0 rounded-full bg-white/10 flex items-center justify-center text-white border border-white/20">
             <User size={20} />
@@ -70,13 +77,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
             </div>
           )}
         </div>
-        {/* --- PROFILE SECTION END --- */}
 
         <nav className="px-3 space-y-2 overflow-y-auto custom-scrollbar">
-          {/* ... existing menu mapping ... */}
           {menuItems.map((item) => (
              <div key={item.name}>
-               {/* Keep your existing menu item logic here */}
                {item.subItems ? (
                 <>
                   <button 

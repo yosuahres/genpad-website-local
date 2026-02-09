@@ -9,7 +9,7 @@ import {
   Trash2, MinusSquare, Plus, Pencil, Download, Square, CheckSquare2Icon 
 } from 'lucide-react';
 import { Modal } from "../../../../components/common/modal";
-import { UserForm } from "../../../../components/dashboard/userform";
+import { UserForm } from "../../../../components/common/form";
 import { Pagination } from "../../../../components/common/pagination";
 import { exportToExcel } from "../../../../utils/exportutils";
 

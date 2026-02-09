@@ -1,5 +1,5 @@
-// apps/api/src/audit/audit.controller.ts
-import { Controller, Get, Delete, UseGuards } from '@nestjs/common';
+
+import { Controller, Get, Delete, UseGuards, Query } from '@nestjs/common';
 import { AuditService } from './audit.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -9,8 +9,10 @@ export class AuditController {
   constructor(private readonly auditService: AuditService) {}
 
   @Get('logs')
-  async getLogs() {
-    return this.auditService.findAll();
+  async getLogs(@Query('days') days?: string) {
+    
+    const daysNum = days ? parseInt(days, 10) : 0;
+    return this.auditService.findAll(daysNum);
   }
 
   @Delete('logs')

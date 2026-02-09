@@ -1,35 +1,45 @@
-// apps/web/src/app/dashboard/superadmin/logs/page.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import DashboardLayout from "../../../../components/Layouts/DashboardLayout";
 import { ROLE_IDS } from "../../../../constants/navigation";
 import { fetchFromBackend } from "../../../../utils/api";
-import { History, ChevronRight, Clock, Search, Trash2, X } from 'lucide-react';
+import { History, ChevronRight, Search, Trash2, Calendar } from 'lucide-react';
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDays, setSelectedDays] = useState(0); 
 
-  const loadLogs = async () => {
+  const loadLogs = async (days: number) => {
     setLoading(true);
     try {
-      const data = await fetchFromBackend('/audit/logs');
+      
+      const data = await fetchFromBackend(`/audit/logs?days=${days}`);
       setLogs(data || []);
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
+    } catch (err) { 
+      console.error(err); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
-  useEffect(() => { loadLogs(); }, []);
+  
+  useEffect(() => { 
+    loadLogs(selectedDays); 
+  }, [selectedDays]);
 
   const handleClear = async () => {
     if (!confirm("Clear all history permanently?")) return;
     try {
       await fetchFromBackend('/audit/logs', { method: 'DELETE' });
       setLogs([]);
-    } catch (err) { alert("Failed to clear logs"); }
+    } catch (err) { 
+      alert("Failed to clear logs"); 
+    }
   };
 
   const filteredLogs = logs.filter(log => 
@@ -48,12 +58,27 @@ export default function AuditLogsPage() {
           <History size={20} /> Activity Logs
         </h2>
         <div className="flex items-center gap-3">
+          {/* Day Filter Dropdown */}
+          <div className="flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-md bg-white">
+            <Calendar size={16} className="text-slate-400" />
+            <select 
+              value={selectedDays}
+              onChange={(e) => setSelectedDays(Number(e.target.value))}
+              className="text-sm focus:outline-none bg-transparent text-black"
+            >
+              <option value={0}>Today</option>
+              <option value={1}>Last 2 Days</option>
+              <option value={2}>Last 3 Days</option>
+              <option value={4}>Last 5 Days</option>
+            </select>
+          </div>
+
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
               type="text" placeholder="Search logs..." value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-slate-200 rounded-md text-sm w-64 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="pl-9 pr-4 py-2 border border-slate-200 rounded-md text-sm w-64 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-black"
             />
           </div>
           <button onClick={handleClear} className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors">
@@ -72,6 +97,8 @@ export default function AuditLogsPage() {
 
         {loading ? (
           <div className="p-10 text-center text-slate-400 italic">Loading activity...</div>
+        ) : filteredLogs.length === 0 ? (
+          <div className="p-10 text-center text-slate-400">No logs found for this period.</div>
         ) : filteredLogs.map((log) => (
           <div key={log.id} className="border-b border-slate-100">
             <div 
