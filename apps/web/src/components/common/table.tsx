@@ -1,6 +1,7 @@
+// apps/web/src/components/common/table.tsx
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Plus, Pencil, Trash2, FileSpreadsheet, ChevronLeft, ChevronRight, 
   ChevronsLeft, ChevronsRight, MoreVertical, ArrowDown, ArrowUp, Loader2, Search, X 
@@ -18,9 +19,11 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
-  const [activeMenu, setActiveMenu] = useState<string | null>(null); // Track which column menu is open
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
-  // Debounce logic
+  // Derived state for pagination
+  const totalPages = Math.ceil(total / limit) || 1;
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -32,23 +35,34 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      let url = `${endpoint}?page=${page}&limit=${limit}`;
-      if (debouncedSearch) url += `&search=${encodeURIComponent(debouncedSearch)}`;
-      if (sortConfig.key && sortConfig.direction) {
-        url += `&sort=${sortConfig.key}&order=${sortConfig.direction}`;
+      // Fix: Use URLSearchParams to handle existing '?' in the endpoint
+      const params = new URLSearchParams();
+      params.append('page', page.toString());
+      params.append('limit', limit.toString());
+      if (debouncedSearch) params.append('search', debouncedSearch);
+      if (sortConfig.key) {
+        params.append('sort', sortConfig.key);
+        params.append('order', sortConfig.direction);
       }
+
+      const separator = endpoint.includes('?') ? '&' : '?';
+      const url = `${endpoint}${separator}${params.toString()}`;
+      
       const res = await fetchFromBackend(url);
       setItems(res.data || []);
       setTotal(res.total || 0);
-    } catch (e) { console.error(e); }
-    setLoading(false);
+    } catch (e) { 
+      console.error("Failed to load data:", e); 
+    } finally {
+      setLoading(false);
+    }
   }, [endpoint, page, limit, sortConfig, debouncedSearch]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
   const handleSort = (key: string, direction: 'asc' | 'desc') => {
     setSortConfig({ key, direction });
-    setActiveMenu(null); // Close menu after selection
+    setActiveMenu(null);
   };
 
   return (
@@ -86,7 +100,7 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
         </div>
       </div>
 
-      {/* TABLE */}
+      {/* TABLE CONTENT */}
       <div className="block w-full overflow-x-auto overflow-y-auto max-h-[600px]">
         <table className="table-fixed min-w-[1200px] w-full border-separate border-spacing-0">
           <thead>
@@ -95,10 +109,7 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
                 <input type="checkbox" className="rounded-sm accent-blue-600" />
               </th>
               {columns.map((col: any) => (
-                <th 
-                  key={col.key}
-                  className="w-60 sticky top-0 z-20 border-b border-r border-gray-300 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600 bg-gray-50 group transition-colors"
-                >
+                <th key={col.key} className="w-60 sticky top-0 z-20 border-b border-r border-gray-300 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-600 bg-gray-50 transition-colors">
                   <div className="flex items-center justify-between relative">
                     <span className="truncate flex items-center gap-2">
                       {col.label}
@@ -106,47 +117,23 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
                         sortConfig.direction === 'asc' ? <ArrowUp size={12} className="text-blue-600"/> : <ArrowDown size={12} className="text-blue-600"/>
                       )}
                     </span>
-                    
-                    {/* Three Dot Menu */}
-                    <div className="relative">
-                      <button 
-                        onClick={() => setActiveMenu(activeMenu === col.key ? null : col.key)}
-                        className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-700 transition-colors"
-                      >
-                        <MoreVertical size={16} />
-                      </button>
+                    <button onClick={() => setActiveMenu(activeMenu === col.key ? null : col.key)} className="p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-700">
+                      <MoreVertical size={16} />
+                    </button>
 
-                      {activeMenu === col.key && (
-                        <>
-                          {/* Backdrop to close menu */}
-                          <div className="fixed inset-0 z-40" onClick={() => setActiveMenu(null)}></div>
-                          
-                          {/* Dropdown Menu */}
-                          <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-xl z-50 py-1 normal-case font-normal text-sm">
-                            <button 
-                              onClick={() => handleSort(col.key, 'asc')}
-                              className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 text-gray-700"
-                            >
-                              <ArrowUp size={14} /> Sort Ascending
-                            </button>
-                            <button 
-                              onClick={() => handleSort(col.key, 'desc')}
-                              className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 text-gray-700"
-                            >
-                              <ArrowDown size={14} /> Sort Descending
-                            </button>
-                            {sortConfig.key === col.key && (
-                              <button 
-                                onClick={() => {setSortConfig({key: '', direction: ''}); setActiveMenu(null);}}
-                                className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 border-t border-gray-100 flex items-center gap-2"
-                              >
-                                <X size={14} /> Clear Sort
-                              </button>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
+                    {activeMenu === col.key && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setActiveMenu(null)}></div>
+                        <div className="absolute right-0 mt-8 w-40 bg-white border border-gray-200 rounded shadow-xl z-50 py-1 normal-case font-normal text-sm">
+                          <button onClick={() => handleSort(col.key, 'asc')} className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 text-gray-700">
+                            <ArrowUp size={14} /> Sort Ascending
+                          </button>
+                          <button onClick={() => handleSort(col.key, 'desc')} className="w-full text-left px-4 py-2 hover:bg-blue-50 flex items-center gap-2 text-gray-700">
+                            <ArrowDown size={14} /> Sort Descending
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </th>
               ))}
@@ -154,22 +141,13 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {loading ? (
-              <tr>
-                <td colSpan={columns.length + 1} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></td>
-              </tr>
+              <tr><td colSpan={columns.length + 1} className="py-20 text-center"><Loader2 className="animate-spin mx-auto text-blue-500" /></td></tr>
             ) : items.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length + 1} className="py-20 text-center text-gray-400">No records found.</td>
-              </tr>
+              <tr><td colSpan={columns.length + 1} className="py-20 text-center text-gray-400">No records found.</td></tr>
             ) : (
               items.map((item) => (
-                <tr 
-                  key={item.id}
-                  onClick={() => setSelected(selected?.id === item.id ? null : item)}
-                  className={`group hover:bg-blue-50/50 transition-colors ${selected?.id === item.id ? 'bg-blue-50' : ''}`}
-                >
-                  <td className={`sticky left-0 z-10 border-r border-gray-200 p-2 text-center transition-colors 
-                    ${selected?.id === item.id ? 'bg-blue-50' : 'bg-white group-hover:bg-gray-50'}`}>
+                <tr key={item.id} onClick={() => setSelected(selected?.id === item.id ? null : item)} className={`group hover:bg-blue-50/50 transition-colors ${selected?.id === item.id ? 'bg-blue-50' : ''}`}>
+                  <td className={`sticky left-0 z-10 border-r border-gray-200 p-2 text-center transition-colors ${selected?.id === item.id ? 'bg-blue-50' : 'bg-white group-hover:bg-gray-50'}`}>
                     <input type="checkbox" checked={selected?.id === item.id} readOnly className="accent-blue-600" />
                   </td>
                   {columns.map((col: any) => (
@@ -184,25 +162,52 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
         </table>
       </div>
 
-      {/* FOOTER */}
+      {/* UPDATED FOOTER */}
       <div className="flex items-center justify-between px-4 py-3 border-t border-gray-300 bg-white shrink-0">
         <div className="flex items-center gap-6">
           <div className="flex border rounded border-gray-300 overflow-hidden shadow-sm text-gray-600">
-            <button onClick={() => setPage(1)} className="p-1.5 hover:bg-gray-100 border-r border-gray-300"><ChevronsLeft size={18}/></button>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} className="p-1.5 hover:bg-gray-100 border-r border-gray-300"><ChevronLeft size={18}/></button>
-            <div className="px-4 py-1.5 text-sm font-bold bg-blue-600 text-white flex items-center">{page}</div>
-            <button onClick={() => setPage(p => p + 1)} className="p-1.5 hover:bg-gray-100 border-r border-gray-300"><ChevronRight size={18}/></button>
-            <button className="p-1.5 hover:bg-gray-100"><ChevronsRight size={18}/></button>
+            <button 
+              disabled={page === 1}
+              onClick={() => setPage(1)} 
+              className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"
+            >
+              <ChevronsLeft size={18}/>
+            </button>
+            <button 
+              disabled={page === 1}
+              onClick={() => setPage(p => Math.max(1, p - 1))} 
+              className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"
+            >
+              <ChevronLeft size={18}/>
+            </button>
+            
+            <div className="px-4 py-1.5 text-sm font-bold bg-blue-600 text-white flex items-center">
+              {page}
+            </div>
+
+            <button 
+              disabled={page >= totalPages}
+              onClick={() => setPage(p => p + 1)} 
+              className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"
+            >
+              <ChevronRight size={18}/>
+            </button>
+            <button 
+              disabled={page >= totalPages}
+              onClick={() => setPage(totalPages)} 
+              className="p-1.5 hover:bg-gray-100 disabled:opacity-30"
+            >
+              <ChevronsRight size={18}/>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
             <select 
-              value={limit === 10000 ? 'all' : limit}
-              onChange={(e) => {setLimit(e.target.value === 'all' ? 10000 : Number(e.target.value)); setPage(1);}}
+              value={limit}
+              onChange={(e) => {setLimit(Number(e.target.value)); setPage(1);}}
               className="border border-gray-300 rounded px-2 py-1 text-sm bg-white"
             >
-              {[10, 20, 50, 100, 200].map(v => <option key={v} value={v}>{v}</option>)}
-              <option value="all">All</option>
+              {[10, 20, 50, 100].map(v => <option key={v} value={v}>{v}</option>)}
             </select>
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Per Page</span>
           </div>

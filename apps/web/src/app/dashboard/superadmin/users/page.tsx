@@ -13,6 +13,7 @@ export default function SuperAdminUsersPage() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role_id: ROLE_IDS.ADMIN });
   const [isEdit, setIsEdit] = useState(false);
   const [currentId, setCurrentId] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const columns = [
     { key: 'name', label: 'Admin Name', sortable: true },
@@ -25,13 +26,14 @@ export default function SuperAdminUsersPage() {
     const url = isEdit ? `/users/${currentId}` : '/users';
     await fetchFromBackend(url, { method, body: JSON.stringify(formData) });
     setIsModalOpen(false);
-    window.location.reload();
+    setRefreshKey(prev => prev + 1);
   };
 
   return (
     <DashboardLayout roleId={ROLE_IDS.SUPERADMIN}>
       <div className="p-6">
         <MasterDataTable 
+          key={refreshKey}
           title="System Administrators"
           endpoint={`/users?roleId=${ROLE_IDS.ADMIN}`}
           columns={columns}
@@ -40,16 +42,16 @@ export default function SuperAdminUsersPage() {
             setIsEdit(false);
             setIsModalOpen(true);
           }}
-          onEdit={(user) => {
+          onEdit={(user: any) => {
             setFormData({ name: user.name, email: user.email, password: '', role_id: user.role_id });
             setCurrentId(user.id);
             setIsEdit(true);
             setIsModalOpen(true);
           }}
-          onDelete={async (id) => {
+          onDelete={async (id: string) => {
             if(confirm('Revoke Admin access?')) {
               await fetchFromBackend(`/users/${id}`, { method: 'DELETE' });
-              window.location.reload();
+              setRefreshKey(prev => prev + 1);
             }
           }}
         />

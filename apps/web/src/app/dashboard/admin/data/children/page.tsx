@@ -12,12 +12,13 @@ export default function ChildrenPage() {
   const [editItem, setEditItem] = useState<any>(null);
   const [regions, setRegions] = useState<any[]>([]);
   const [academicYears, setAcademicYears] = useState<any[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0); 
   const [formData, setFormData] = useState({ 
     child_code: '', name: '', region_id: '', education_level: '', academic_year_id: '' 
   });
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadDropdowns = async () => {
       const [regionsRes, yearsRes] = await Promise.all([
         fetchFromBackend('/regions'),
         fetchFromBackend('/academic-years')
@@ -25,14 +26,14 @@ export default function ChildrenPage() {
       setRegions(regionsRes.data || []);
       setAcademicYears(yearsRes.data || []);
     };
-    loadData();
+    loadDropdowns();
   }, []);
 
   const columns = [
     { key: 'child_code', label: 'Code', sortable: true },
     { key: 'name', label: 'Full Name', sortable: true },
     { key: 'education_level', label: 'Level' },
-    { key: 'region_id', label: 'Region ID' }, // You can add render logic for names later
+    { key: 'region_id', label: 'Region ID' },
     { key: 'academic_year_id', label: 'Year ID' }
   ];
 
@@ -42,13 +43,14 @@ export default function ChildrenPage() {
     const endpoint = editItem ? `/children/${editItem.id}` : '/children';
     await fetchFromBackend(endpoint, { method, body: JSON.stringify(formData) });
     setIsModalOpen(false);
-    window.location.reload();
+    setRefreshKey(prev => prev + 1);
   };
 
   return (
     <DashboardLayout roleId={ROLE_IDS.ADMIN}>
       <div className="p-6">
         <MasterDataTable 
+          key={refreshKey}
           title="Children Data"
           endpoint="/children"
           columns={columns}
@@ -57,8 +59,13 @@ export default function ChildrenPage() {
             setFormData({ child_code: '', name: '', region_id: '', education_level: '', academic_year_id: '' }); 
             setIsModalOpen(true); 
           }}
-          onEdit={(item) => { setEditItem(item); setFormData(item); setIsModalOpen(true); }}
-          onDelete={async (id) => { if(confirm('Delete child record?')) { await fetchFromBackend(`/children/${id}`, { method: 'DELETE' }); window.location.reload(); }}}
+          onEdit={(item: any) => { setEditItem(item); setFormData(item); setIsModalOpen(true); }}
+          onDelete={async (id: string) => { 
+            if(confirm('Delete child record?')) { 
+              await fetchFromBackend(`/children/${id}`, { method: 'DELETE' }); 
+              setRefreshKey(prev => prev + 1); 
+            }
+          }}
         />
       </div>
 

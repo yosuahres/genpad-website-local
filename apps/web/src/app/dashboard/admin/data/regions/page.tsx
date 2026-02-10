@@ -11,6 +11,7 @@ export default function RegionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<any>(null);
   const [formData, setFormData] = useState({ name: '', code: '' });
+  const [refreshKey, setRefreshKey] = useState(0); // Added refreshKey
 
   const columns = [
     { key: 'code', label: 'Region Code', sortable: true },
@@ -23,19 +24,25 @@ export default function RegionsPage() {
     const endpoint = editItem ? `/regions/${editItem.id}` : '/regions';
     await fetchFromBackend(endpoint, { method, body: JSON.stringify(formData) });
     setIsModalOpen(false);
-    window.location.reload();
+    setRefreshKey(prev => prev + 1); // Trigger refresh
   };
 
   return (
     <DashboardLayout roleId={ROLE_IDS.ADMIN}>
       <div className="p-6">
         <MasterDataTable 
+          key={refreshKey} // Pass key here
           title="Regions"
           endpoint="/regions"
           columns={columns}
           onAdd={() => { setEditItem(null); setFormData({ name: '', code: '' }); setIsModalOpen(true); }}
-          onEdit={(item) => { setEditItem(item); setFormData({ name: item.name, code: item.code }); setIsModalOpen(true); }}
-          onDelete={async (id) => { if(confirm('Delete region?')) { await fetchFromBackend(`/regions/${id}`, { method: 'DELETE' }); window.location.reload(); }}}
+          onEdit={(item: any) => { setEditItem(item); setFormData({ name: item.name, code: item.code }); setIsModalOpen(true); }}
+          onDelete={async (id: string) => { 
+            if(confirm('Delete region?')) { 
+              await fetchFromBackend(`/regions/${id}`, { method: 'DELETE' }); 
+              setRefreshKey(prev => prev + 1); 
+            }
+          }}
         />
       </div>
 
@@ -49,7 +56,7 @@ export default function RegionsPage() {
             <label className="block text-sm font-medium text-slate-700 mb-1">Region Name</label>
             <input className="w-full px-3 py-2 border rounded-lg" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
           </div>
-          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium">Save Region</button>
+          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700">Save Region</button>
         </form>
       </Modal>
     </DashboardLayout>

@@ -1,3 +1,4 @@
+// apps/web/src/app/dashboard/admin/users/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -13,6 +14,7 @@ export default function AdminUsersPage() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role_id: ROLE_IDS.PENGURUS_LOKAL });
   const [isEdit, setIsEdit] = useState(false);
   const [currentId, setCurrentId] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Add a key to force refresh table
 
   const columns = [
     { key: 'name', label: 'Full Name', sortable: true },
@@ -25,13 +27,15 @@ export default function AdminUsersPage() {
     const url = isEdit ? `/users/${currentId}` : '/users';
     await fetchFromBackend(url, { method, body: JSON.stringify(formData) });
     setIsModalOpen(false);
-    window.location.reload();
+    // Refresh without full page reload
+    setRefreshKey(prev => prev + 1);
   };
 
   return (
     <DashboardLayout roleId={ROLE_IDS.ADMIN}>
       <div className="p-6">
         <MasterDataTable 
+          key={refreshKey} // Changing this key forces the component to remount/refetch
           title="Local Staff Management"
           endpoint={`/users?roleId=${ROLE_IDS.PENGURUS_LOKAL}`}
           columns={columns}
@@ -40,16 +44,16 @@ export default function AdminUsersPage() {
             setIsEdit(false);
             setIsModalOpen(true);
           }}
-          onEdit={(user) => {
+          onEdit={(user: any) => {
             setFormData({ name: user.name, email: user.email, password: '', role_id: user.role_id });
             setCurrentId(user.id);
             setIsEdit(true);
             setIsModalOpen(true);
           }}
-          onDelete={async (id) => {
+          onDelete={async (id: string) => {
             if(confirm('Delete user?')) {
               await fetchFromBackend(`/users/${id}`, { method: 'DELETE' });
-              window.location.reload();
+              setRefreshKey(prev => prev + 1);
             }
           }}
         />
