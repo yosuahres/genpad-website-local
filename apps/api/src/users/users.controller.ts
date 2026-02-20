@@ -2,7 +2,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, HttpException, HttpStatus, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { SupabaseService } from '../supabase/supabase.service';
-import { AuditService } from '../audit/audit.service';
+import { AuditService } from '../audit-logs/audit.service';
 
 @Controller('users')
 @UseGuards(AuthGuard('jwt'))

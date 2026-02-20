@@ -28,6 +28,7 @@ export const ADMIN_MENU: NavItem[] = [
       { name: 'Regions', path: '/dashboard/admin/data/regions', icon: Map },
       { name: 'Tahun Ajaran', path: '/dashboard/admin/data/academic-years', icon: Calendar },
       { name: 'Template Card', path: '/dashboard/admin/data/template-cards', icon: FileText },
+      { name: 'Parent Asuh', path: '/dashboard/admin/data/parent-asuh', icon: Users },
       { name: 'Anak Asuh', path: '/dashboard/admin/data/children', icon: Baby },
     ]
   },

@@ -17,11 +17,15 @@ export class CreateChildDto {
 
   @IsString()
   @IsNotEmpty()
-  education_level: string; // e.g., "SD", "SMP", "SMA"
+  education_level: string;
 
   @IsUUID()
   @IsNotEmpty()
   academic_year_id: string;
+
+  @IsUUID()
+  @IsOptional()
+  parent_asuh_id?: string; 
 
   @IsUUID()
   @IsOptional()

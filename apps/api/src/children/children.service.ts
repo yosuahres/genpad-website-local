@@ -1,4 +1,4 @@
-
+// apps/api/src/children/children.service.ts
 import { Injectable } from '@nestjs/common';
 import { BaseSupabaseService } from '../common/base-supabase.service';
 import { SupabaseService } from '../supabase/supabase.service';
@@ -13,7 +13,8 @@ export class ChildrenService extends BaseSupabaseService {
     return this.findAll(page, limit, `
       *,
       region:regions(name),
-      academic_year:academic_years(year_label)
-    `); 
+      academic_year:academic_years(year_label),
+      parent_asuh:parent_asuh(name)
+    `);
   }
 }

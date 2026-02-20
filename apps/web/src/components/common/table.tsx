@@ -1,4 +1,4 @@
-// apps/web/src/components/common/table.tsx
+
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -13,7 +13,7 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
   const [items, setItems] = useState<any[]>([]);
   const [selected, setSelected] = useState<any>(null);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(50);
+  const [limit, setLimit] = useState(50); 
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -26,7 +26,6 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
 
   const totalPages = Math.ceil(total / limit) || 1;
 
-  // Scroll function for Toolbar ONLY
   const scrollToolbar = (direction: 'left' | 'right') => {
     if (toolbarScrollRef.current) {
       const { scrollLeft } = toolbarScrollRef.current;
@@ -48,7 +47,7 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
     try {
       const params = new URLSearchParams();
       params.append('page', page.toString());
-      params.append('limit', limit.toString());
+      params.append('limit', limit.toString()); 
       if (debouncedSearch) params.append('search', debouncedSearch);
       
       const separator = endpoint.includes('?') ? '&' : '?';
@@ -73,7 +72,7 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
   return (
     <div className="flex flex-col w-full border border-gray-300 bg-white rounded-md overflow-hidden shadow-sm">
       
-      {/* TOOLBAR SECTION (Arrows Kept Here) */}
+      {/* TOOLBAR SECTION */}
       <div className="relative group/toolbar border-b border-gray-300 bg-white">
         <button 
           onClick={() => scrollToolbar('left')}
@@ -176,14 +175,35 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
       </div>
 
       <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 gap-4 border-t border-gray-300 bg-white">
-        <div className="flex border rounded border-gray-300 overflow-hidden text-gray-600">
-          <button disabled={page === 1} onClick={() => setPage(1)} className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"><ChevronsLeft size={18}/></button>
-          <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"><ChevronLeft size={18}/></button>
-          <div className="px-4 py-1.5 text-sm font-bold bg-blue-600 text-white">{page}</div>
-          <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"><ChevronRight size={18}/></button>
-          <button disabled={page >= totalPages} onClick={() => setPage(totalPages)} className="p-1.5 hover:bg-gray-100 disabled:opacity-30"><ChevronsRight size={18}/></button>
+        <div className="flex items-center gap-4">
+          <div className="flex border rounded border-gray-300 overflow-hidden text-gray-600">
+            <button disabled={page === 1} onClick={() => setPage(1)} className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"><ChevronsLeft size={18}/></button>
+            <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"><ChevronLeft size={18}/></button>
+            <div className="px-4 py-1.5 text-sm font-bold bg-blue-600 text-white">{page}</div>
+            <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="p-1.5 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-30"><ChevronRight size={18}/></button>
+            <button disabled={page >= totalPages} onClick={() => setPage(totalPages)} className="p-1.5 hover:bg-gray-100 disabled:opacity-30"><ChevronsRight size={18}/></button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-black whitespace-nowrap">Show:</span>
+            <select
+              value={limit === 10000 ? 'all' : limit}
+              onChange={(e) => {
+                const val = e.target.value;
+                setLimit(val === 'all' ? 10000 : parseInt(val));
+                setPage(1); 
+              }}
+              className="text-sm border border-gray-300 rounded px-2 py-1 bg-white outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              {[10, 20, 50, 100, 200].map(v => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+              <option value="all">All</option>
+            </select>
+          </div>
         </div>
-        <div className="text-sm text-gray-500">
+        
+        <div className="text-sm text-black">
           Showing {items.length} of {total}
         </div>
       </div>
