@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { ChevronLeft, ChevronRight, ChevronDown, X, User } from 'lucide-react';
 import { ADMIN_MENU, SUPERADMIN_MENU, ROLE_IDS } from '../../../constants/navigation';
 import { createClient } from "../../../utils/supabase/client";
+import { useIsMobile } from '../../../hooks/use-mobile'; // Import hook
 
 interface SidebarProps {
   sidebarOpen: boolean; 
@@ -16,13 +17,20 @@ interface SidebarProps {
 
 export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: SidebarProps) {
   const pathname = usePathname();
+  const isMobile = useIsMobile(); // Use hook
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
   const [profileName, setProfileName] = useState<string | null>(null);
   const supabase = createClient();
 
-  // Determine the home path based on roleId
   const homePath = roleId === ROLE_IDS.SUPERADMIN ? '/dashboard/superadmin' : '/dashboard/admin';
+
+  // Automatically close sidebar when switching from mobile to desktop
+  useEffect(() => {
+    if (!isMobile) {
+      setSidebarOpen(false);
+    }
+  }, [isMobile, setSidebarOpen]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -38,37 +46,47 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
   const menuItems = roleId === ROLE_IDS.SUPERADMIN ? SUPERADMIN_MENU : ADMIN_MENU;
 
   const toggleSubMenu = (name: string) => {
-    if (isCollapsed) return;
+    if (isCollapsed && !isMobile) return;
     setOpenMenus(prev => ({ ...prev, [name]: !prev[name] }));
   };
 
   return (
     <>
+      {/* Mobile Overlay */}
       <div 
-        className={`fixed inset-0 z-[9998] bg-black/50 lg:hidden transition-opacity ${sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`} 
+        className={`fixed inset-0 z-[9998] bg-black/50 transition-opacity ${isMobile && sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`} 
         onClick={() => setSidebarOpen(false)} 
       />
 
-      <aside className={`fixed left-0 top-0 z-[9999] h-screen bg-[#4b545c] text-white transition-all duration-300 border-r border-white/10 lg:static ${isCollapsed ? 'w-20' : 'w-72'} ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`
+        fixed top-0 z-[9999] h-screen bg-[#4b545c] text-white transition-all duration-300 border-r border-white/10
+        ${isMobile ? (sidebarOpen ? 'translate-x-0 w-72' : '-translate-x-full w-72') : (isCollapsed ? 'w-20 static' : 'w-72 static')}
+      `}>
         
         <div className="p-6 flex items-center justify-between">
-          {!isCollapsed && (
+          {(!isCollapsed || isMobile) && (
             <Link href={homePath} className="font-bold text-xl tracking-tight text-white hover:opacity-80 transition-opacity">
               Genpad
             </Link>
           )}
-          <button onClick={() => setIsCollapsed(!isCollapsed)} className="hidden lg:block p-1.5 rounded-lg bg-white/5 hover:bg-white/10">
-            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </button>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-white"><X size={20} /></button>
+          
+          {!isMobile ? (
+            <button onClick={() => setIsCollapsed(!isCollapsed)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10">
+              {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
+          ) : (
+            <button onClick={() => setSidebarOpen(false)} className="text-white">
+              <X size={20} />
+            </button>
+          )}
         </div>
 
-        {/* ... Profile and Nav sections remain the same ... */}
-        <div className={`px-6 py-4 mb-4 border-b border-white/10 flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
+        {/* Profile Section */}
+        <div className={`px-6 py-4 mb-4 border-b border-white/10 flex items-center gap-3 ${(isCollapsed && !isMobile) ? 'justify-center' : ''}`}>
           <div className="h-10 w-10 shrink-0 rounded-full bg-white/10 flex items-center justify-center text-white border border-white/20">
             <User size={20} />
           </div>
-          {!isCollapsed && (
+          {(!isCollapsed || isMobile) && (
             <div className="overflow-hidden">
               <p className="text-sm font-bold text-white truncate">{profileName || 'Loading...'}</p>
               <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
@@ -85,22 +103,23 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
                 <>
                   <button 
                     onClick={() => toggleSubMenu(item.name)} 
-                    className={`w-full flex items-center p-3 rounded-xl transition-colors hover:bg-black/10 ${openMenus[item.name] && !isCollapsed ? 'text-white bg-black/10' : 'text-zinc-300'}`}
+                    className={`w-full flex items-center p-3 rounded-xl transition-colors hover:bg-black/10 ${(openMenus[item.name] && (!isCollapsed || isMobile)) ? 'text-white bg-black/10' : 'text-zinc-300'}`}
                   >
                     <item.icon size={20} />
-                    {!isCollapsed && (
+                    {(!isCollapsed || isMobile) && (
                       <>
                         <span className="ml-3 flex-1 text-left text-base font-medium">{item.name}</span>
                         <ChevronDown size={14} className={`transition-transform ${openMenus[item.name] ? 'rotate-180' : ''}`} />
                       </>
                     )}
                   </button>
-                  {!isCollapsed && openMenus[item.name] && (
+                  {(!isCollapsed || isMobile) && openMenus[item.name] && (
                     <div className="ml-9 mt-1 space-y-1 border-l border-white/20 pl-4">
                       {item.subItems.map(sub => (
                         <Link 
                           key={sub.path} 
                           href={sub.path} 
+                          onClick={() => isMobile && setSidebarOpen(false)} // Close on navigate for mobile
                           className="block p-2 text-base text-zinc-300 hover:text-white transition-colors"
                         >
                           {sub.name}
@@ -112,10 +131,11 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, roleId }: Sidebar
               ) : (
                 <Link 
                   href={item.path!} 
+                  onClick={() => isMobile && setSidebarOpen(false)}
                   className={`flex items-center p-3 rounded-xl transition-all ${pathname === item.path ? 'bg-white text-black' : 'text-zinc-300 hover:bg-black/10'}`}
                 >
                   <item.icon size={20} />
-                  {!isCollapsed && <span className="ml-3 text-base font-medium">{item.name}</span>}
+                  {(!isCollapsed || isMobile) && <span className="ml-3 text-base font-medium">{item.name}</span>}
                 </Link>
               )}
              </div>
