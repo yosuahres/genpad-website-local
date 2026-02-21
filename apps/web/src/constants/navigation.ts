@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Baby, FileText, Users, Map, 
   Settings, History, UserPlus, List, LucideIcon, 
   Calendar,
-  UserRoundSearch
+  UserRoundSearch,
+  Send
 } from 'lucide-react';
 
 export interface NavItem {
@@ -33,6 +34,7 @@ export const ADMIN_MENU: NavItem[] = [
     ]
   },
   { name: 'Rapor Anak', path: '/dashboard/admin/reports', icon: FileText },
+  { name: 'Messaging', path: '/dashboard/admin/messaging', icon: Send },
 ];
 
 export const SUPERADMIN_MENU: NavItem[] = [ 

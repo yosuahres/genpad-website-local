@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuditModule } from './audit-logs/audit.module';
 import { DocumentsModule } from './documents/documents.module'; 
 import { ParentAsuhModule } from 'parent_asuh/parent-asuh.module';
+import { MessagingModule } from 'messaging/messaging.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { ParentAsuhModule } from 'parent_asuh/parent-asuh.module';
     TemplateCardsModule,
     AuditModule,
     DocumentsModule, 
-    ParentAsuhModule 
+    ParentAsuhModule ,
+    MessagingModule
   ],
   controllers: [AppController],
 })
