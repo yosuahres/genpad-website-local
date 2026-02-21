@@ -67,7 +67,6 @@ export default function DocumentDetailsPage() {
             </div>
           </div>
 
-          {/* Preview Panel */}
           <div className="xl:col-span-3">
             <div className="bg-slate-50 border border-slate-200 rounded-[2rem] overflow-hidden shadow-sm h-[850px] flex flex-col">
               <div className="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center">

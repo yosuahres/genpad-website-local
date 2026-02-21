@@ -83,7 +83,6 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Details & Preview Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Document Details">
         {selected && (
           <div className="space-y-6 pt-2">
