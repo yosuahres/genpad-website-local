@@ -74,10 +74,17 @@ export default function ChildrenPage() {
           columns={columns}
           onAdd={() => { 
             setEditItem(null); 
-            setFormData({ child_code: '', name: '', region_id: '', education_level: '', academic_year_id: '', parent_asuh_id: '' }); 
+            setFormData({ 
+              child_code: '', 
+              name: '', 
+              region_id: '', 
+              education_level: '', 
+              academic_year_id: '', 
+              parent_asuh_id: '', 
+            }); 
             setIsModalOpen(true); 
           }}
-          onEdit={(item: any) => { setEditItem(item); setFormData({ ...item, parent_asuh_id: item.parent_asuh_id || '' }); setIsModalOpen(true); }}
+          onEdit={(item: any) => { setEditItem(item); setFormData({ ...item, education_level: item.education_level || '', parent_asuh_id: item.parent_asuh_id || '' }); setIsModalOpen(true); }}
           onDelete={async (id: string) => { if(confirm('Delete?')) { await fetchFromBackend(`/children/${id}`, { method: 'DELETE' }); setRefreshKey(k => k + 1); }}}
         />
       </div>
@@ -87,6 +94,19 @@ export default function ChildrenPage() {
           <input className="w-full px-3 py-2 border rounded-lg" placeholder="Code" value={formData.child_code} onChange={e => setFormData({...formData, child_code: e.target.value})} required />
           <input className="w-full px-3 py-2 border rounded-lg" placeholder="Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
           
+          <select 
+            className="w-full px-3 py-2 border rounded-lg" 
+            value={formData.education_level} 
+            onChange={e => setFormData({...formData, education_level: e.target.value})} 
+            required
+          >
+            <option value="">Select Education Level</option>
+            <option value="SD">SD</option>
+            <option value="SMP">SMP</option>
+            <option value="SMA">SMA</option>
+            <option value="Kuliah">Kuliah</option>
+          </select>
+
           <select className="w-full px-3 py-2 border rounded-lg" value={formData.region_id} onChange={e => setFormData({...formData, region_id: e.target.value})} required>
             <option value="">Select Region</option>
             {regions.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
