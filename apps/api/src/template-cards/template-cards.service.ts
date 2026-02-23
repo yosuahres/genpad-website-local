@@ -5,7 +5,7 @@ import { CreateTemplateCardDto, UpdateTemplateCardDto } from '../dto/template-ca
 
 @Injectable()
 export class TemplateCardsService {
-  private readonly tableName = 'template_cards';
+  private readonly tableName = 'card_templates'; 
 
   constructor(private readonly supabase: SupabaseService) {}
 

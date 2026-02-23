@@ -16,6 +16,7 @@ interface TemplateCard {
   template_type: string;
   template_file: string;
   is_active: boolean;
+  default_message: string;
 }
 
 export default function TemplateCardPage() {
@@ -23,7 +24,13 @@ export default function TemplateCardPage() {
   const [selected, setSelected] = useState<TemplateCard | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<TemplateCard | null>(null);
-  const [formData, setFormData] = useState({ name: '', template_type: 'STUDENT', template_file: '', is_active: true });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    template_type: 'card_template', 
+    template_file: '', 
+    is_active: true,
+    default_message: '' // Added to match schema
+  });
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -45,8 +52,14 @@ export default function TemplateCardPage() {
   const openModal = (item?: TemplateCard) => {
     setEditItem(item || null);
     setFormData(item ? 
-      { name: item.name, template_type: item.template_type, template_file: item.template_file, is_active: item.is_active } : 
-      { name: '', template_type: 'STUDENT', template_file: '', is_active: true }
+      { 
+        name: item.name, 
+        template_type: item.template_type, 
+        template_file: item.template_file, 
+        is_active: item.is_active,
+        default_message: item.default_message || '' 
+      } : 
+      { name: '', template_type: 'card_template', template_file: '', is_active: true, default_message: '' }
     );
     setIsModalOpen(true);
   };

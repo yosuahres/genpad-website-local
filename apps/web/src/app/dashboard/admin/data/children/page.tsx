@@ -36,7 +36,20 @@ export default function ChildrenPage() {
     { key: 'child_code', label: 'Code' },
     { key: 'name', label: 'Full Name' },
     { key: 'education_level', label: 'Level' },
-    { key: 'parent_asuh.name', label: 'Parent' } 
+    { 
+      key: 'parent_asuh', 
+      label: 'Parent', 
+      render: (val: any) => {
+        // Handle both object and array-of-object returns
+        const parent = Array.isArray(val) ? val[0] : val;
+        return parent?.name || '-';
+      }
+    },
+    { 
+      key: 'region', 
+      label: 'Region', 
+      render: (val: any) => (Array.isArray(val) ? val[0]?.name : val?.name) || '-' 
+    }
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
