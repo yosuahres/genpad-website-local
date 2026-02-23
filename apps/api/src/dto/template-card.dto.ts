@@ -1,26 +1,27 @@
-import { IsString, IsNotEmpty, IsBoolean, IsEnum } from 'class-validator';
+// apps/api/src/dto/template-card.dto.ts
+import { IsString, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
-
-export enum TemplateType {
-  STUDENT = 'STUDENT',
-  STAFF = 'STAFF',
-  VISITOR = 'VISITOR'
-}
 
 export class CreateTemplateCardDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsEnum(TemplateType)
-  template_type: TemplateType;
+  @IsString()
+  @IsOptional()
+  template_type?: string; // Should match your DB enum values like 'card_template'
 
   @IsString()
-  @IsNotEmpty()
-  template_file: string; // Path or URL to the template asset
+  @IsOptional()
+  template_file?: string;
+
+  @IsString()
+  @IsOptional()
+  default_message?: string;
 
   @IsBoolean()
-  is_active: boolean;
+  @IsOptional()
+  is_active?: boolean;
 }
 
 export class UpdateTemplateCardDto extends PartialType(CreateTemplateCardDto) {}

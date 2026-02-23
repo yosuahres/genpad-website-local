@@ -14,7 +14,7 @@ export default function GlobalMessagingPage() {
     template_file: '', 
     default_message: '',
     name: 'Global Config',
-    template_type: 'STUDENT' 
+    template_type: 'card_template' 
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

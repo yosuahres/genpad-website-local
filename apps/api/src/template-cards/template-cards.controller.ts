@@ -1,22 +1,14 @@
 // apps/api/src/template-cards/template-cards.controller.ts
 import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
-  Query, 
-  UseGuards, 
-  ParseIntPipe 
+  Controller, Get, Post, Put, Delete, 
+  Body, Param, Query, UseGuards, ParseIntPipe 
 } from '@nestjs/common';
 import { TemplateCardsService } from './template-cards.service';
 import { CreateTemplateCardDto, UpdateTemplateCardDto } from '../dto/template-card.dto';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('template-cards')
-@UseGuards(AuthGuard) 
+@UseGuards(AuthGuard)
 export class TemplateCardsController {
   constructor(private readonly service: TemplateCardsService) {}
 
@@ -34,10 +26,7 @@ export class TemplateCardsController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id') id: string, 
-    @Body() dto: UpdateTemplateCardDto
-  ) {
+  async update(@Param('id') id: string, @Body() dto: UpdateTemplateCardDto) {
     return this.service.update(id, dto);
   }
 
