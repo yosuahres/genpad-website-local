@@ -2,10 +2,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import DashboardLayout from "../../../../../components/Layouts/DashboardLayout";
-import { ROLE_IDS } from "../../../../../constants/navigation";
-import { fetchFromBackend } from "../../../../../utils/api";
-import { createClient } from "../../../../../utils/supabase/client";
+import DashboardLayout from "../../../../components/Layouts/DashboardLayout";
+import { ROLE_IDS } from "../../../../constants/navigation";
+import { fetchFromBackend } from "../../../../utils/api";
+import { createClient } from "../../../../utils/supabase/client";
 import { Upload, Save, MessageSquare, Image as ImageIcon, Loader2, CheckCircle } from 'lucide-react';
 
 export default function GlobalMessagingPage() {
@@ -18,6 +18,7 @@ export default function GlobalMessagingPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  
   const supabase = createClient();
 
   useEffect(() => {

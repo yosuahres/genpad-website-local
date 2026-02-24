@@ -28,13 +28,21 @@ export const ADMIN_MENU: NavItem[] = [
     subItems: [
       { name: 'Regions', path: '/dashboard/admin/data/regions', icon: Map },
       { name: 'Tahun Ajaran', path: '/dashboard/admin/data/academic-years', icon: Calendar },
-      { name: 'Template Card', path: '/dashboard/admin/data/template-cards', icon: FileText },
+      // { name: 'Template Card', path: '/dashboard/admin/data/template-cards', icon: FileText },
       { name: 'Parent Asuh', path: '/dashboard/admin/data/parent-asuh', icon: Users },
       { name: 'Anak Asuh', path: '/dashboard/admin/data/children', icon: Baby },
     ]
   },
+  {
+    name: 'Messaging',
+    icon: List,
+    subItems: [
+      { name: 'Template Configuration', path: '/dashboard/admin/template-cards', icon: FileText },
+      { name: 'Whatsapp', path: '/dashboard/admin/messaging', icon: Send },
+    ]
+  },
   { name: 'Rapor Anak', path: '/dashboard/admin/reports', icon: FileText },
-  { name: 'Messaging', path: '/dashboard/admin/messaging', icon: Send },
+  // { name: 'Messaging', path: '/dashboard/admin/messaging', icon: Send },
 ];
 
 export const SUPERADMIN_MENU: NavItem[] = [ 
