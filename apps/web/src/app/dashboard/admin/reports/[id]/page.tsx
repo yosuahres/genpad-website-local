@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import DashboardLayout from "../../../../../components/Layouts/DashboardLayout";
 import { ROLE_IDS } from "../../../../../constants/navigation";
 import { fetchFromBackend } from "../../../../../utils/api";
+import { getStorageUrl } from "../../../../../utils/storage";
 import { 
   ArrowLeft, FileText, Download, Clock, CheckCircle2, 
   User, Calendar, ShieldCheck, HardDrive 
@@ -35,6 +36,8 @@ export default function DocumentDetailsPage() {
     </DashboardLayout>
   );
 
+  const fullFileUrl = getStorageUrl(doc.file_path);
+
   return (
     <DashboardLayout roleId={ROLE_IDS.ADMIN}>
       <div className="max-w-7xl mx-auto px-4 pb-12">
@@ -44,7 +47,6 @@ export default function DocumentDetailsPage() {
         </button>
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-          {/* Metadata Sidebar */}
           <div className="xl:col-span-1 space-y-6">
             <div className="bg-white border border-slate-200 rounded-[2rem] p-8 shadow-sm">
               <h2 className="text-xl font-bold text-black mb-8">Document Details</h2>
@@ -61,7 +63,12 @@ export default function DocumentDetailsPage() {
                 <DetailRow icon={<Calendar size={16}/>} label="Created" value={new Date(doc.created_at).toLocaleString()} />
                 <DetailRow icon={<Calendar size={16}/>} label="Synced" value={doc.synced_at ? new Date(doc.synced_at).toLocaleString() : 'Pending'} />
               </div>
-              <a href={doc.file_path} target="_blank" download className="mt-10 w-full bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all">
+              <a 
+                href={fullFileUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mt-10 w-full bg-slate-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all"
+              >
                 <Download size={18} /> Download
               </a>
             </div>
@@ -77,10 +84,10 @@ export default function DocumentDetailsPage() {
               </div>
               <div className="flex-1 relative bg-slate-200/50">
                 {doc.file_type === 'application/pdf' ? (
-                  <iframe src={`${doc.file_path}#toolbar=0`} className="w-full h-full border-none" title="PDF Preview" />
-                ) : doc.file_type.startsWith('image/') ? (
+                  <iframe src={`${fullFileUrl}#toolbar=0`} className="w-full h-full border-none" title="PDF Preview" />
+                ) : doc.file_type?.startsWith('image/') ? (
                   <div className="w-full h-full flex items-center justify-center p-12">
-                    <img src={doc.file_path} alt="Preview" className="max-w-full max-h-full object-contain rounded-xl shadow-2xl bg-white" />
+                    <img src={fullFileUrl} alt="Preview" className="max-w-full max-h-full object-contain rounded-xl shadow-2xl bg-white" />
                   </div>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">

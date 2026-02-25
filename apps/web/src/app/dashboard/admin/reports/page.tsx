@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from "../../../../components/Layouts/DashboardLayout";
 import { ROLE_IDS } from "../../../../constants/navigation";
 import { fetchFromBackend } from "../../../../utils/api";
+import { getStorageUrl } from "../../../../utils/storage";
 import { Eye, Download, FileText, CheckCircle2, Clock } from 'lucide-react';
 import { Modal } from "../../../../components/common/modal";
 import { Pagination } from "../../../../components/common/pagination";
@@ -103,8 +104,9 @@ export default function ReportsPage() {
                 <FileText size={48} className="text-slate-300 mb-4" />
                 <p className="text-xs font-medium text-slate-600 mb-4 truncate max-w-full">{selected.file_path}</p>
                 <a 
-                  href={selected.file_path} 
+                  href={getStorageUrl(selected.file_path)} 
                   target="_blank" 
+                  rel="noopener noreferrer"
                   className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-xs font-bold flex items-center gap-2 hover:bg-black transition-all"
                 >
                   <Download size={14} /> Download File
