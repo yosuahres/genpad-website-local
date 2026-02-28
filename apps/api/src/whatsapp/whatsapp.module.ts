@@ -2,7 +2,7 @@
 import { Module, Global } from '@nestjs/common';
 import { WhatsAppService } from './whatsapp.service';
 
-@Global() // Make available app-wide without importing in every module
+@Global() 
 @Module({
   providers: [WhatsAppService],
   exports: [WhatsAppService],

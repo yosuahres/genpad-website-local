@@ -91,52 +91,85 @@ export default function GlobalMessagingPage() {
 
   if (loading) return <div className="p-10 text-center">Loading...</div>;
 
+  const templateUrl = formData.template_file
+    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/templates/${formData.template_file}`
+    : null;
+
   return (
     <DashboardLayout roleId={ROLE_IDS.ADMIN}>
-      <div className="max-w-xl mx-auto py-12 px-6">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">WhatsApp Configuration</h1>
-        <p className="text-slate-500 mb-8 text-sm">Update the image and message sent to all parents.</p>
-        
-        <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm space-y-8">
-          {/* File Upload */}
-          <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-widest text-slate-400">Card Image (Bucket)</label>
-            <div className="flex items-center gap-4">
-              <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center gap-3">
-                <ImageIcon size={18} className="text-slate-400" />
-                <span className="text-sm font-mono truncate text-slate-600">
-                  {formData.template_file || 'No file selected'}
-                </span>
+      <div className="h-full flex flex-col p-6 gap-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Message Template</h1>
+            <p className="text-slate-500 text-sm mt-1">Thank Card Template and message template</p>
+          </div>
+          <button 
+            onClick={handleSave}
+            disabled={saving || !formData.template_file}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 disabled:opacity-50 transition-all"
+          >
+            {saving ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
+            Save Configuration
+          </button>
+        </div>
+
+        {/* Main Content - Two Column Layout */}
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-0">
+          {/* Left: Image Preview & Upload */}
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ImageIcon size={16} className="text-slate-400" />
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Card Image</span>
               </div>
-              <label className="cursor-pointer bg-slate-900 text-white p-3 rounded-lg hover:bg-black transition-colors">
-                <Upload size={18} />
+              <label className="cursor-pointer bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-black transition-colors flex items-center gap-2 text-sm font-medium">
+                <Upload size={16} />
+                Upload
                 <input type="file" className="hidden" onChange={handleFileUpload} accept="image/*" />
               </label>
             </div>
+            <div className="flex-1 p-6 flex items-center justify-center bg-slate-50 min-h-[300px]">
+              {templateUrl ? (
+                <img 
+                  src={templateUrl} 
+                  alt="Template preview" 
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-md"
+                />
+              ) : (
+                <div className="text-center text-slate-400">
+                  <ImageIcon size={48} className="mx-auto mb-3 opacity-40" />
+                  <p className="text-sm font-medium">No template image uploaded</p>
+                  <p className="text-xs mt-1">Upload an image to preview it here</p>
+                </div>
+              )}
+            </div>
+            {formData.template_file && (
+              <div className="px-6 py-3 border-t border-slate-100 bg-white">
+                <span className="text-xs font-mono text-slate-500 truncate block">{formData.template_file}</span>
+              </div>
+            )}
           </div>
 
-          {/* Message Text */}
-          <div className="space-y-3">
-            <label className="text-xs font-black uppercase tracking-widest text-slate-400">WhatsApp Message</label>
-            <div className="relative">
-              <MessageSquare className="absolute left-3 top-3 text-slate-300" size={18} />
+          {/* Right: Message Editor */}
+          <div className="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-2">
+              <MessageSquare size={16} className="text-black" />
+              <span className="text-xs font-black uppercase tracking-widest text-slate-400">WhatsApp Message</span>
+            </div>
+            <div className="flex-1 p-6 flex flex-col min-h-[300px]">
               <textarea 
-                className="w-full pl-10 p-4 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none min-h-[120px]" 
+                className="w-full flex-1 p-4 border border-slate-200 rounded-lg text-sm text-black focus:ring-2 focus:ring-blue-500 outline-none resize-none bg-slate-50 focus:bg-white transition-colors" 
                 value={formData.default_message}
                 onChange={e => setFormData({...formData, default_message: e.target.value})}
                 placeholder="Write the message here..."
               />
+              <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+                <span>{formData.default_message.length} characters</span>
+                <span>Supports WhatsApp formatting: *bold*, _italic_, ~strikethrough~</span>
+              </div>
             </div>
           </div>
-
-          <button 
-            onClick={handleSave}
-            disabled={saving || !formData.template_file}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg font-bold flex items-center justify-center gap-3 disabled:opacity-50 transition-all"
-          >
-            {saving ? <Loader2 className="animate-spin" size={20} /> : <CheckCircle size={20} />}
-            Save & Update All Messages
-          </button>
         </div>
       </div>
     </DashboardLayout>

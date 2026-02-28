@@ -22,7 +22,6 @@ export class WhatsAppService implements OnModuleInit {
   private readonly authDir = path.join(process.cwd(), 'whatsapp-auth');
 
   async onModuleInit() {
-    // Auto-connect on startup if auth session exists
     if (fs.existsSync(this.authDir)) {
       this.logger.log('Existing WhatsApp session found, reconnecting...');
       await this.connect();
@@ -52,11 +51,10 @@ export class WhatsAppService implements OnModuleInit {
           keys: makeCacheableSignalKeyStore(state.keys, pinoLogger),
         },
         logger: pinoLogger,
-        printQRInTerminal: true, // Also print QR in terminal for convenience
+        printQRInTerminal: true,
         generateHighQualityLinkPreview: false,
       });
 
-      // Handle connection updates
       this.sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
 
@@ -75,7 +73,6 @@ export class WhatsAppService implements OnModuleInit {
             this.clearSession();
           } else {
             this.logger.warn(`WhatsApp disconnected (reason: ${reason}). Reconnecting...`);
-            // Reconnect after a short delay
             setTimeout(() => this.connect(), 3000);
           }
         }
@@ -88,7 +85,6 @@ export class WhatsAppService implements OnModuleInit {
         }
       });
 
-      // Save auth credentials whenever updated
       this.sock.ev.on('creds.update', saveCreds);
     } catch (err: any) {
       this.isConnecting = false;
@@ -118,7 +114,6 @@ export class WhatsAppService implements OnModuleInit {
       throw new Error('WhatsApp is not connected. Scan QR code first via GET /messaging/qr');
     }
 
-    // Format phone number to WhatsApp JID format
     const jid = this.formatPhoneToJid(phoneNumber);
 
     this.logger.log(`Sending image to ${jid} (${Math.round(imageBuffer.length / 1024)}KB)`);
@@ -142,20 +137,13 @@ export class WhatsAppService implements OnModuleInit {
     return this.sock.sendMessage(jid, { text: message });
   }
 
-  /**
-   * Convert a local phone number to WhatsApp JID.
-   * Handles Indonesian numbers: 08xxx -> 628xxx
-   * Already formatted numbers (62xxx) are kept as-is.
-   */
   private formatPhoneToJid(phone: string): string {
     let cleaned = phone.replace(/[^0-9]/g, '');
 
-    // Indonesian number: replace leading 0 with 62
     if (cleaned.startsWith('0')) {
       cleaned = '62' + cleaned.substring(1);
     }
 
-    // If no country code, assume Indonesian
     if (!cleaned.startsWith('62') && cleaned.length <= 12) {
       cleaned = '62' + cleaned;
     }
