@@ -1,15 +1,19 @@
 import { createClient } from './supabase/client';
 
-export async function fetchFromBackend(endpoint: string, options: RequestInit = {}) {
-  const supabase = createClient();
+export async function fetchFromBackend(endpoint: string, options: RequestInit = {}, token?: string) {
+  let accessToken = token;
 
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+  if (!accessToken) {
+    const supabase = createClient();
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-  if (sessionError || !session) {
-    throw new Error('AUTH_SESSION_MISSING');
+    if (sessionError || !session) {
+      throw new Error('AUTH_SESSION_MISSING');
+    }
+    accessToken = session.access_token;
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -19,7 +23,7 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
+      'Authorization': `Bearer ${accessToken}`,
       ...options.headers,
     },
   });

@@ -5,7 +5,7 @@ import { SupabaseModule } from '../supabase/supabase.module';
 import { MessagingController } from './messaging.controller';
 
 @Module({
-  imports: [SupabaseModule], 
+  imports: [SupabaseModule],
   controllers: [MessagingController],
   providers: [MessagingService],
   exports: [MessagingService],

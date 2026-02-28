@@ -24,7 +24,7 @@ export default function LoginPage() {
       if (authError) throw authError;
 
       if (data.user) {
-        const userProfile = await fetchFromBackend('/auth/profile'); 
+        const userProfile = await fetchFromBackend('/auth/profile', {}, data.session?.access_token); 
 
         console.log('User profile fetched:', userProfile); // Debugging log
         if (userProfile.role === 'super_admin') {
