@@ -1,6 +1,5 @@
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";
-import { fixupConfigRules } from "@eslint/compat";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,9 +12,8 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  // Removed Next.js plugin extensions due to FlatConfig incompatibility
-  // You may add compatible rules manually below if needed
-
+  // ADDED: Use compat.extends to safely load the Next.js recommended rules in Flat Config
+  ...compat.extends("next/core-web-vitals"),
   {
     ignores: [
       ".next/**",
@@ -26,10 +24,11 @@ const eslintConfig = [
       ".turbo/**"
     ],
   },
-
   {
     rules: {
-      // rules
+      // Turn off annoying React rules if you are using React 17+
+      "react/react-in-jsx-scope": "off",
+      "@next/next/no-html-link-for-pages": "off"
     },
   },
 ];

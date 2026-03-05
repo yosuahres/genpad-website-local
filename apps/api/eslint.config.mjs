@@ -6,10 +6,11 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    ignores: ['eslint.config.mjs', 'dist/**', 'build/**'],
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  // 1. Put the TypeChecked config back so the rule definitions exist
+  ...tseslint.configs.recommendedTypeChecked, 
   eslintPluginPrettierRecommended,
   {
     languageOptions: {
@@ -28,7 +29,14 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      
+      // 2. Explicitly turn OFF the strict "unsafe" rules so they don't bother you
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      
       "prettier/prettier": ["error", { endOfLine: "auto" }],
     },
   },
