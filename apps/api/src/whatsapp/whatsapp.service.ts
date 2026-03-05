@@ -30,6 +30,23 @@ export class WhatsAppService implements OnModuleInit {
     }
   }
 
+  async sendDocument(
+    phoneNumber: string,
+    fileBuffer: Buffer,
+    fileName: string,
+    mimeType: string,
+  ): Promise<any> {
+    if (!this.sock || !this.isConnected) {
+      throw new Error('WhatsApp is not connected. Scan QR code first via GET /messaging/qr');
+    }
+    const jid = this.formatPhoneToJid(phoneNumber);
+    return this.sock.sendMessage(jid, {
+      document: fileBuffer,
+      fileName,
+      mimetype: mimeType,
+    });
+  }
+
   async connect(): Promise<void> {
     if (this.isConnecting) {
       this.logger.warn('Connection already in progress');

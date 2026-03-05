@@ -110,7 +110,7 @@ export default function GlobalMessagingPage() {
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 disabled:opacity-50 transition-all"
           >
             {saving ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
-            Save Configuration
+            Save
           </button>
         </div>
 

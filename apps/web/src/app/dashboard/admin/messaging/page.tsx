@@ -11,12 +11,10 @@ export default function MessagingPage() {
   const [data, setData] = useState([]);
   const [sendingId, setSendingId] = useState<string | null>(null);
   
-  // WhatsApp connection state
   const [waStatus, setWaStatus] = useState<{ connected: boolean; connecting: boolean }>({ connected: false, connecting: false });
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [checkingStatus, setCheckingStatus] = useState(true);
 
-  // Check WhatsApp connection status
   const checkWAStatus = useCallback(async () => {
     try {
       const res = await fetchFromBackend('/messaging/status');
@@ -31,7 +29,6 @@ export default function MessagingPage() {
     }
   }, []);
 
-  // Request QR code for pairing
   const requestQR = async () => {
     setCheckingStatus(true);
     try {
@@ -42,7 +39,6 @@ export default function MessagingPage() {
       } else if (res.qr) {
         setQrCode(res.qr);
         setWaStatus({ connected: false, connecting: true });
-        // Poll for connection status while QR is shown
         const interval = setInterval(async () => {
           const status = await checkWAStatus();
           if (status?.connected) {
@@ -50,7 +46,6 @@ export default function MessagingPage() {
             setQrCode(null);
           }
         }, 3000);
-        // Stop polling after 2 minutes
         setTimeout(() => clearInterval(interval), 120000);
       }
     } catch (err: any) {
@@ -60,7 +55,6 @@ export default function MessagingPage() {
     }
   };
 
-  // Disconnect WhatsApp
   const disconnectWA = async () => {
     if (!confirm('Disconnect WhatsApp? You will need to scan QR again.')) return;
     try {
@@ -108,9 +102,8 @@ export default function MessagingPage() {
   return (
     <DashboardLayout roleId={ROLE_IDS.ADMIN}>
       <div className="p-6">
-        <h2 className="text-xl font-bold mb-6">Send Report Cards</h2>
+        <h2 className="text-xl font-bold mb-6 text-black">Send Report Cards</h2>
 
-        {/* WhatsApp Connection Status Card */}
         <div className={`mb-6 p-4 rounded-lg border ${
           waStatus.connected 
             ? 'bg-green-50 border-green-200' 
@@ -155,14 +148,12 @@ export default function MessagingPage() {
             </div>
           </div>
 
-          {/* QR Code Display */}
           {qrCode && !waStatus.connected && (
             <div className="mt-4 p-4 bg-white rounded-lg border text-center">
               <p className="text-sm text-slate-600 mb-3">
                 Open WhatsApp on your phone &gt; Settings &gt; Linked Devices &gt; Link a Device
               </p>
               <div className="inline-block p-4 bg-white border-2 border-slate-200 rounded-xl">
-                {/* Render QR code as text (the API returns a QR string, render via img with qr API) */}
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(qrCode)}`} 
                   alt="WhatsApp QR Code" 

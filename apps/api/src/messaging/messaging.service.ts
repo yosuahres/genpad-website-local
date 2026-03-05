@@ -34,7 +34,40 @@ export class MessagingService {
 
     if (childError || !child) throw new BadRequestException('Child details not found');
 
-    // 3. Fetch the active template configuration
+    // 3. Fetch the newest report card document for the child
+    const { data: document, error: documentError } = await this.supabase
+      .getClient()
+      .from('documents')
+      .select('id, file_path, file_type, created_at')
+      .eq('child_id', childId)
+      .eq('document_type', 'raport') // adjust if your enum value is different
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    let reportText = '';
+    let pdfBuffer: Buffer | null = null;
+    let pdfMimeType = 'application/pdf';
+    if (!documentError && document) {
+      reportText = `\n\nLatest Report Card:\nDate: ${document.created_at}`;
+      // Download the PDF from Supabase Storage
+      const pdfPath = document.file_path;
+      const { data: pdfData, error: pdfError } = await this.supabase
+        .getAdminClient()
+        .storage.from('documents')
+        .download(pdfPath);
+      if (pdfError || !pdfData) {
+        this.logger.error('Failed to download PDF report card from storage', pdfError);
+        reportText += '\n(PDF file could not be attached)';
+      } else {
+        const pdfArrayBuffer = await pdfData.arrayBuffer();
+        pdfBuffer = Buffer.from(pdfArrayBuffer);
+      }
+    } else {
+      reportText = '\n\nNo report card found for this child.';
+    }
+
+    // 4. Fetch the active template configuration
     const { data: config, error: configError } = await this.supabase
       .getClient()
       .from('card_templates')
@@ -50,7 +83,7 @@ export class MessagingService {
     if (!targetPhone) throw new BadRequestException('Parent phone number missing');
     if (!config.template_file) throw new BadRequestException('No template image configured');
 
-    // 4. Download image from Supabase Storage
+    // 5. Download image from Supabase Storage
     const { data: fileData, error: fileError } = await this.supabase
       .getAdminClient()
       .storage.from('templates')
@@ -76,16 +109,25 @@ export class MessagingService {
       `Sending card to ${targetPhone} for child "${(child as any).name}" (${ext}, ${Math.round(imageBuffer.length / 1024)}KB)`,
     );
 
-    // 5. Send via Baileys (WhatsApp Web)
+    // 6. Send via Baileys (WhatsApp Web)
     try {
-      const result = await this.whatsapp.sendImage(
+      // Send template image first
+      await this.whatsapp.sendImage(
         targetPhone,
         imageBuffer,
-        config.default_message || '',
+        (config.default_message || '') + reportText,
         mimeType,
       );
-
-      return { success: true, data: { messageId: result?.key?.id } };
+      // If PDF exists, send it as a document
+      if (pdfBuffer) {
+        await this.whatsapp.sendDocument(
+          targetPhone,
+          pdfBuffer,
+          'ReportCard.pdf',
+          pdfMimeType,
+        );
+      }
+      return { success: true };
     } catch (err: any) {
       this.logger.error(`WhatsApp send failed: ${err.message}`);
       throw new BadRequestException(`Messaging Error: ${err.message}`);

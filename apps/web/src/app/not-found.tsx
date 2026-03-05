@@ -17,8 +17,7 @@ export default function NotFound() {
           Page Not Found
         </h2>
         <p className="text-slate-500 mb-8 leading-relaxed">
-          The page you are looking for might have been removed, had its name changed, 
-          or is temporarily unavailable.
+          Error path
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">

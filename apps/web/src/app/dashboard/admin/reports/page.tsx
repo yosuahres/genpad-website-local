@@ -20,6 +20,7 @@ export default function ReportsPage() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    
     try {
       const response = await fetchFromBackend(`/documents?page=${page}&limit=${PAGE_SIZE}`);
       setItems(response.data || []);
@@ -60,7 +61,7 @@ export default function ReportsPage() {
                     <div className="text-[10px] font-mono text-slate-400 uppercase">{item.child?.child_code}</div>
                   </td>
                   <td className="py-5 px-6">
-                    <span className="px-2 py-1 bg-slate-100 text-[10px] font-bold rounded uppercase">{item.document_type}</span>
+                    <span className="px-2 py-1 bg-slate-100 text-[10px] font-bold text-black rounded uppercase">{item.document_type}</span>
                   </td>
                   <td className="py-5 px-6">
                     {item.upload_status === 'completed' ? 
