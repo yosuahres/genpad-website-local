@@ -16,7 +16,7 @@ interface UserWithRole {
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private supabaseService: SupabaseService,
-    private configService: ConfigService,
+    configService: ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

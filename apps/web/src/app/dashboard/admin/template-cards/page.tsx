@@ -6,7 +6,7 @@ import DashboardLayout from "../../../../components/Layouts/DashboardLayout";
 import { ROLE_IDS } from "../../../../constants/navigation";
 import { fetchFromBackend } from "../../../../utils/api";
 import { createClient } from "../../../../utils/supabase/client";
-import { Upload, Save, MessageSquare, Image as ImageIcon, Loader2, CheckCircle } from 'lucide-react';
+import { Upload, MessageSquare, Image as ImageIcon, Loader2, CheckCircle } from 'lucide-react';
 
 export default function GlobalMessagingPage() {
   const [configId, setConfigId] = useState<string | null>(null);
@@ -49,7 +49,7 @@ export default function GlobalMessagingPage() {
     const fileExt = file.name.split('.').pop();
     const fileName = `template-${Date.now()}.${fileExt}`;
     
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from('templates')
       .upload(fileName, file, { upsert: true });
 

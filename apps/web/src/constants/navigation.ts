@@ -1,6 +1,6 @@
 // apps/web/src/constants/navigation.ts
 import { 
-  LayoutDashboard, Baby, FileText, Users, Map, 
+  Baby, FileText, Users, Map, 
   Settings, History, UserPlus, List, LucideIcon, 
   Calendar,
   UserRoundSearch,

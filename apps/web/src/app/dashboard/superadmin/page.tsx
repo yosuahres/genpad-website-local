@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 import { ROLE_IDS } from "../../../constants/navigation";
 import { Users, ShieldCheck, Activity, AlertCircle } from "lucide-react";
-import { fetchFromBackend } from "../../../utils/api";
+// import { fetchFromBackend } from "../../../utils/api";
 
 interface DashboardStats {
   totalAdmins: number;
@@ -15,7 +15,7 @@ interface DashboardStats {
 }
 
 export default function SuperAdminPage() {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [stats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

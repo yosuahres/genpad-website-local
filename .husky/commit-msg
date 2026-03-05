@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Enforce Conventional Commits format
+# Examples: feat: add login page, fix: resolve auth bug, chore: update deps
+commit_msg=$(cat "$1")
+pattern="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .{1,}"
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+  echo "❌ Invalid commit message format."
+  echo ""
+  echo "Commit message must follow Conventional Commits:"
+  echo "  <type>(optional scope): <description>"
+  echo ""
+  echo "Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+  echo ""
+  echo "Examples:"
+  echo "  feat: add user authentication"
+  echo "  fix(api): handle null response"
+  echo "  docs: update README setup instructions"
+  exit 1
+fi

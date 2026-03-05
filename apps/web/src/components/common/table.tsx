@@ -18,8 +18,8 @@ export default function MasterDataTable({ title, endpoint, columns, onAdd, onEdi
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  // const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
+  // const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const toolbarScrollRef = useRef<HTMLDivElement>(null);
   const tableScrollRef = useRef<HTMLDivElement>(null);

@@ -2,67 +2,84 @@ name: CI
 
 on:
   push:
-    branches: 'main'
+    branches: [main, develop]
   pull_request:
-    branches: 'main'
-  workflow_dispatch:
+    branches: [main, develop]
 
-# You can leverage Vercel Remote Caching with Turbo to speed up your builds
-# @link https://turborepo.org/docs/core-concepts/remote-caching#remote-caching-on-vercel-builds
-env:
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-lint:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-
     steps:
-      - name: '☁️ Checkout repo'
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: '🔧 Setup pnpm'
-        uses: pnpm/action-setup@v2.4.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
-      - name: '🔧 Setup Node 18'
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: pnpm
 
-      - name: '🔧 Get pnpm store directory'
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: '🔧 Setup pnpm cache'
-        uses: actions/cache@v3
+      - name: Run ESLint
+        run: pnpm lint
+
+      - name: Check formatting
+        run: pnpm format:check
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          node-version: 20
+          cache: pnpm
 
-      - name: '📦 Install deps (with cache)'
-        run: pnpm install
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      # TODO: Free for all to find a better solution here.
-      - name: '🛠 Build, lint and type-check'
-        run: pnpm turbo build lint type-check
+      - name: Type check
+        run: pnpm typecheck
 
-      # - name: '🕵 Check workspaces'
-      #   run: pnpm manypkg check
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: '📊 repository visualizer'
-        id: diagram
-        uses: githubocto/repo-visualizer@0.9.1
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          excluded_paths: 'node_modules,build,.vercel,.github,.husky'
-          # output_file: 'public/diagram.svg'
-          should_push: false
-          root_path: ''
+          node-version: 20
+          cache: pnpm
 
-      - name: '📊 visualizer artifacts'
-        uses: actions/upload-artifact@v3
-        with:
-          name: diagram
-          path: diagram.svg
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
