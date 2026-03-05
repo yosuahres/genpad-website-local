@@ -15,11 +15,14 @@ export class DocumentsService extends BaseSupabaseService {
     const { data, count, error } = await this.supabase
       .getClient()
       .from(this.tableName)
-      .select(`
+      .select(
+        `
         *,
         child:children(name, child_code),
         uploader:users(name)
-      `, { count: 'exact' })
+      `,
+        { count: 'exact' },
+      )
       .range(from, to)
       .order('created_at', { ascending: false });
 
@@ -31,11 +34,13 @@ export class DocumentsService extends BaseSupabaseService {
     const { data, error } = await this.supabase
       .getClient()
       .from(this.tableName)
-      .select(`
+      .select(
+        `
         *,
         child:children(name, child_code),
         uploader:users(name)
-      `)
+      `,
+      )
       .eq('id', id)
       .single();
 

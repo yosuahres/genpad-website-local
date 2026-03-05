@@ -25,14 +25,17 @@ export class MessagingService {
     const { data: child, error: childError } = await this.supabase
       .getClient()
       .from('children')
-      .select(`
+      .select(
+        `
         name,
         parent_asuh:parent_asuh_id (name, phone_number)
-      `)
+      `,
+      )
       .eq('id', childId)
       .single();
 
-    if (childError || !child) throw new BadRequestException('Child details not found');
+    if (childError || !child)
+      throw new BadRequestException('Child details not found');
 
     // 3. Fetch the newest report card document for the child
     const { data: document, error: documentError } = await this.supabase
@@ -47,7 +50,7 @@ export class MessagingService {
 
     let reportText = '';
     let pdfBuffer: Buffer | null = null;
-    let pdfMimeType = 'application/pdf';
+    const pdfMimeType = 'application/pdf';
     if (!documentError && document) {
       reportText = `\n\nLatest Report Card:\nDate: ${document.created_at}`;
       // Download the PDF from Supabase Storage
@@ -57,7 +60,10 @@ export class MessagingService {
         .storage.from('documents')
         .download(pdfPath);
       if (pdfError || !pdfData) {
-        this.logger.error('Failed to download PDF report card from storage', pdfError);
+        this.logger.error(
+          'Failed to download PDF report card from storage',
+          pdfError,
+        );
         reportText += '\n(PDF file could not be attached)';
       } else {
         const pdfArrayBuffer = await pdfData.arrayBuffer();
@@ -76,12 +82,19 @@ export class MessagingService {
       .limit(1)
       .single();
 
-    if (configError || !config) throw new BadRequestException('Global messaging config not found');
+    if (configError || !config)
+      throw new BadRequestException('Global messaging config not found');
 
-    const parent = (Array.isArray(child.parent_asuh) ? child.parent_asuh[0] : child.parent_asuh) as any;
+    const parent = (
+      Array.isArray(child.parent_asuh)
+        ? child.parent_asuh[0]
+        : child.parent_asuh
+    ) as any;
     const targetPhone = parent?.phone_number;
-    if (!targetPhone) throw new BadRequestException('Parent phone number missing');
-    if (!config.template_file) throw new BadRequestException('No template image configured');
+    if (!targetPhone)
+      throw new BadRequestException('Parent phone number missing');
+    if (!config.template_file)
+      throw new BadRequestException('No template image configured');
 
     // 5. Download image from Supabase Storage
     const { data: fileData, error: fileError } = await this.supabase
@@ -90,7 +103,10 @@ export class MessagingService {
       .download(config.template_file);
 
     if (fileError || !fileData) {
-      this.logger.error('Failed to download template image from storage', fileError);
+      this.logger.error(
+        'Failed to download template image from storage',
+        fileError,
+      );
       throw new BadRequestException('Failed to download template image');
     }
 
@@ -100,8 +116,11 @@ export class MessagingService {
     // Detect MIME type from file extension
     const ext = config.template_file.split('.').pop()?.toLowerCase() || 'png';
     const mimeMap: Record<string, string> = {
-      png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
-      gif: 'image/gif', webp: 'image/webp',
+      png: 'image/png',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      gif: 'image/gif',
+      webp: 'image/webp',
     };
     const mimeType = mimeMap[ext] || 'image/png';
 

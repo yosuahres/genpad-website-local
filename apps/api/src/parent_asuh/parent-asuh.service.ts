@@ -1,7 +1,10 @@
 // apps/api/src/parent-asuh/parent-asuh.service.ts
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
-import { CreateParentAsuhDto, UpdateParentAsuhDto } from '../dto/parent-asuh.dto';
+import {
+  CreateParentAsuhDto,
+  UpdateParentAsuhDto,
+} from '../dto/parent-asuh.dto';
 
 @Injectable()
 export class ParentAsuhService {
@@ -27,7 +30,8 @@ export class ParentAsuhService {
       .getClient()
       .from(this.tableName)
       .insert(dto)
-      .select().single();
+      .select()
+      .single();
 
     if (error) throw new BadRequestException(error.message);
     return data;
@@ -39,14 +43,19 @@ export class ParentAsuhService {
       .from(this.tableName)
       .update(dto)
       .eq('id', id)
-      .select().single();
+      .select()
+      .single();
 
     if (error) throw new BadRequestException(error.message);
     return data;
   }
 
   async remove(id: string) {
-    const { error } = await this.supabase.getClient().from(this.tableName).delete().eq('id', id);
+    const { error } = await this.supabase
+      .getClient()
+      .from(this.tableName)
+      .delete()
+      .eq('id', id);
     if (error) throw new BadRequestException(error.message);
     return { success: true };
   }

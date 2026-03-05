@@ -2,7 +2,7 @@
 import { Module, Global } from '@nestjs/common';
 import { WhatsAppService } from './whatsapp.service';
 
-@Global() 
+@Global()
 @Module({
   providers: [WhatsAppService],
   exports: [WhatsAppService],

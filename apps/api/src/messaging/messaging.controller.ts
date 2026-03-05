@@ -1,5 +1,11 @@
 // messaging.controller.ts
-import { Controller, Post, Get, Body, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  BadRequestException,
+} from '@nestjs/common';
 import { MessagingService } from './messaging.service';
 import { WhatsAppService } from '../whatsapp/whatsapp.service';
 
@@ -57,7 +63,10 @@ export class MessagingController {
   @Post('disconnect')
   async disconnect() {
     await this.whatsapp.disconnect();
-    return { success: true, message: 'WhatsApp disconnected and session cleared.' };
+    return {
+      success: true,
+      message: 'WhatsApp disconnected and session cleared.',
+    };
   }
 
   @Post('send-card')

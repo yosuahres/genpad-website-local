@@ -1,5 +1,16 @@
 // apps/api/src/regions/regions.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { RegionsService } from './regions.service';
 import { CreateRegionDto, UpdateRegionDto } from '../dto/region.dto';
 import { AuthGuard } from '../auth/auth.guard';

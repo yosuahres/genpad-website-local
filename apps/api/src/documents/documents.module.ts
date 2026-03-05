@@ -4,7 +4,7 @@ import { DocumentsService } from './documents.service';
 import { SupabaseModule } from '../supabase/supabase.module';
 
 @Module({
-  imports: [SupabaseModule], 
+  imports: [SupabaseModule],
   controllers: [DocumentsController],
   providers: [DocumentsService],
   exports: [DocumentsService],

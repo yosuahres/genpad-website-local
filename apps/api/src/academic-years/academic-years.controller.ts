@@ -1,7 +1,21 @@
 // apps/api/src/academic-years/academic-years.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AcademicYearsService } from './academic-years.service';
-import { CreateAcademicYearDto, UpdateAcademicYearDto } from '../dto/academicyears.dto';
+import {
+  CreateAcademicYearDto,
+  UpdateAcademicYearDto,
+} from '../dto/academicyears.dto';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('academic-years')
@@ -10,7 +24,7 @@ export class AcademicYearsController {
   constructor(private readonly service: AcademicYearsService) {}
 
   @Get()
-  findAll(@Query('page', new ParseIntPipe({optional: true})) page = 1) {
+  findAll(@Query('page', new ParseIntPipe({ optional: true })) page = 1) {
     return this.service.findAll(page);
   }
 

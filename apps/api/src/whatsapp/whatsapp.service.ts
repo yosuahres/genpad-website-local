@@ -26,7 +26,9 @@ export class WhatsAppService implements OnModuleInit {
       this.logger.log('Existing WhatsApp session found, reconnecting...');
       await this.connect();
     } else {
-      this.logger.warn('No WhatsApp session found. Scan QR code via GET /messaging/qr to connect.');
+      this.logger.warn(
+        'No WhatsApp session found. Scan QR code via GET /messaging/qr to connect.',
+      );
     }
   }
 
@@ -37,7 +39,9 @@ export class WhatsAppService implements OnModuleInit {
     mimeType: string,
   ): Promise<any> {
     if (!this.sock || !this.isConnected) {
-      throw new Error('WhatsApp is not connected. Scan QR code first via GET /messaging/qr');
+      throw new Error(
+        'WhatsApp is not connected. Scan QR code first via GET /messaging/qr',
+      );
     }
     const jid = this.formatPhoneToJid(phoneNumber);
     return this.sock.sendMessage(jid, {
@@ -89,7 +93,9 @@ export class WhatsAppService implements OnModuleInit {
             this.logger.warn('WhatsApp logged out. Clearing session...');
             this.clearSession();
           } else {
-            this.logger.warn(`WhatsApp disconnected (reason: ${reason}). Reconnecting...`);
+            this.logger.warn(
+              `WhatsApp disconnected (reason: ${reason}). Reconnecting...`,
+            );
             setTimeout(() => this.connect(), 3000);
           }
         }
@@ -128,12 +134,16 @@ export class WhatsAppService implements OnModuleInit {
     mimeType?: string,
   ): Promise<any> {
     if (!this.sock || !this.isConnected) {
-      throw new Error('WhatsApp is not connected. Scan QR code first via GET /messaging/qr');
+      throw new Error(
+        'WhatsApp is not connected. Scan QR code first via GET /messaging/qr',
+      );
     }
 
     const jid = this.formatPhoneToJid(phoneNumber);
 
-    this.logger.log(`Sending image to ${jid} (${Math.round(imageBuffer.length / 1024)}KB)`);
+    this.logger.log(
+      `Sending image to ${jid} (${Math.round(imageBuffer.length / 1024)}KB)`,
+    );
 
     const result = await this.sock.sendMessage(jid, {
       image: imageBuffer,
@@ -147,7 +157,9 @@ export class WhatsAppService implements OnModuleInit {
 
   async sendText(phoneNumber: string, message: string): Promise<any> {
     if (!this.sock || !this.isConnected) {
-      throw new Error('WhatsApp is not connected. Scan QR code first via GET /messaging/qr');
+      throw new Error(
+        'WhatsApp is not connected. Scan QR code first via GET /messaging/qr',
+      );
     }
 
     const jid = this.formatPhoneToJid(phoneNumber);

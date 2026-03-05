@@ -9,8 +9,8 @@ import { createClient } from '@supabase/supabase-js';
 @Injectable()
 export class AuthGuard implements CanActivate {
   private supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY,
   );
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

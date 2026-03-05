@@ -5,7 +5,9 @@ import { PartialType } from '@nestjs/mapped-types';
 export class CreateAcademicYearDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^\d{4}\/\d{4}$/, { message: 'Year label must be in format YYYY/YYYY' })
+  @Matches(/^\d{4}\/\d{4}$/, {
+    message: 'Year label must be in format YYYY/YYYY',
+  })
   year_label: string;
 
   @IsBoolean()

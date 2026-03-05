@@ -1,7 +1,10 @@
 // apps/api/src/template-cards/template-cards.service.ts
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
-import { CreateTemplateCardDto, UpdateTemplateCardDto } from '../dto/template-card.dto';
+import {
+  CreateTemplateCardDto,
+  UpdateTemplateCardDto,
+} from '../dto/template-card.dto';
 
 @Injectable()
 export class TemplateCardsService {
@@ -28,14 +31,16 @@ export class TemplateCardsService {
     const { data, error } = await this.supabase
       .getClient()
       .from(this.tableName)
-      .insert([{
-        name: dto.name,
-        template_file: dto.template_file,
-        default_message: dto.default_message,
-        is_active: dto.is_active ?? true,
-        // Match the database enum 'template_type_enum'
-        template_type: dto.template_type || 'card_template' 
-      }])
+      .insert([
+        {
+          name: dto.name,
+          template_file: dto.template_file,
+          default_message: dto.default_message,
+          is_active: dto.is_active ?? true,
+          // Match the database enum 'template_type_enum'
+          template_type: dto.template_type || 'card_template',
+        },
+      ])
       .select()
       .single();
 
@@ -54,7 +59,7 @@ export class TemplateCardsService {
         template_file: dto.template_file,
         default_message: dto.default_message,
         is_active: dto.is_active,
-        template_type: dto.template_type
+        template_type: dto.template_type,
       })
       .eq('id', id)
       .select()

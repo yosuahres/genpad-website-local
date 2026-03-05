@@ -1,10 +1,21 @@
 // apps/api/src/template-cards/template-cards.controller.ts
-import { 
-  Controller, Get, Post, Put, Delete, 
-  Body, Param, Query, UseGuards, ParseIntPipe 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TemplateCardsService } from './template-cards.service';
-import { CreateTemplateCardDto, UpdateTemplateCardDto } from '../dto/template-card.dto';
+import {
+  CreateTemplateCardDto,
+  UpdateTemplateCardDto,
+} from '../dto/template-card.dto';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('template-cards')

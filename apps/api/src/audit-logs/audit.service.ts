@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 
@@ -7,7 +6,6 @@ export class AuditService {
   constructor(private supabaseService: SupabaseService) {}
 
   async findAll(days: number = 0) {
-    
     const dateLimit = new Date();
     dateLimit.setHours(0, 0, 0, 0);
     dateLimit.setDate(dateLimit.getDate() - days);
@@ -16,7 +14,7 @@ export class AuditService {
       .getClient()
       .from('activity_logs')
       .select(`*, users ( name, email )`)
-      .gte('created_at', dateLimit.toISOString()) 
+      .gte('created_at', dateLimit.toISOString())
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -44,7 +42,7 @@ export class AuditService {
       .getAdminClient()
       .from('activity_logs')
       .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000'); 
+      .neq('id', '00000000-0000-0000-0000-000000000000');
 
     if (error) throw error;
     return { success: true };

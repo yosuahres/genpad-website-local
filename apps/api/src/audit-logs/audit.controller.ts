@@ -1,4 +1,3 @@
-
 import { Controller, Get, Delete, UseGuards, Query } from '@nestjs/common';
 import { AuditService } from './audit.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -10,7 +9,6 @@ export class AuditController {
 
   @Get('logs')
   async getLogs(@Query('days') days?: string) {
-    
     const daysNum = days ? parseInt(days, 10) : 0;
     return this.auditService.findAll(daysNum);
   }

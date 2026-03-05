@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-argument */
 import { BadRequestException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 
@@ -46,7 +47,11 @@ export class BaseSupabaseService {
   }
 
   async remove(id: string) {
-    const { error } = await this.supabase.getClient().from(this.tableName).delete().eq('id', id);
+    const { error } = await this.supabase
+      .getClient()
+      .from(this.tableName)
+      .delete()
+      .eq('id', id);
     if (error) throw new BadRequestException(error.message);
     return { success: true };
   }

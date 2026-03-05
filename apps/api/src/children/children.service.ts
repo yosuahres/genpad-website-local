@@ -7,16 +7,22 @@ import { SupabaseService } from '../supabase/supabase.service';
 @Injectable()
 export class ChildrenService extends BaseSupabaseService {
   constructor(supabase: SupabaseService) {
-    super(supabase, 'children'); 
+    super(supabase, 'children');
   }
-  
+
   async findAllExtended(page: number, limit: number) {
-    console.log('DEBUG: Executing findAllExtended with parent_asuh(phone_number)');
-    return this.findAll(page, limit, `
+    console.log(
+      'DEBUG: Executing findAllExtended with parent_asuh(phone_number)',
+    );
+    return this.findAll(
+      page,
+      limit,
+      `
       *,
       region:region_id(name),
       academic_year:academic_year_id(year_label),
       parent_asuh:parent_asuh_id(name, phone_number) 
-    `); // Added phone_number here
+    `,
+    ); // Added phone_number here
   }
 }
