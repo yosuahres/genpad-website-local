@@ -6,7 +6,11 @@
   ],
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.tsx",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
     "./styles.css": "./dist/index.css"
   },
   "license": "MIT",
