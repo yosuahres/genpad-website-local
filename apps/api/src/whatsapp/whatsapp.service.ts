@@ -1,12 +1,22 @@
 // apps/api/src/whatsapp/whatsapp.service.ts
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import makeWASocket, {
-  DisconnectReason,
-  useMultiFileAuthState,
-  WASocket,
-  fetchLatestBaileysVersion,
-  makeCacheableSignalKeyStore,
-} from '@whiskeysockets/baileys';
+import type { WASocket } from '@whiskeysockets/baileys';
+let makeWASocket: any;
+let DisconnectReason: any;
+let useMultiFileAuthState: any;
+// WASocket is only used as a type, not a runtime value
+let fetchLatestBaileysVersion: any;
+let makeCacheableSignalKeyStore: any;
+// Dynamically import Baileys for ESM compatibility
+async function importBaileys() {
+  const baileys = await import('@whiskeysockets/baileys');
+  makeWASocket = baileys.default;
+  DisconnectReason = baileys.DisconnectReason;
+  useMultiFileAuthState = baileys.useMultiFileAuthState;
+  // WASocket is a type only, no runtime assignment needed
+  fetchLatestBaileysVersion = baileys.fetchLatestBaileysVersion;
+  makeCacheableSignalKeyStore = baileys.makeCacheableSignalKeyStore;
+}
 import { Boom } from '@hapi/boom';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -22,6 +32,7 @@ export class WhatsAppService implements OnModuleInit {
   private readonly authDir = path.join(process.cwd(), 'whatsapp-auth');
 
   async onModuleInit() {
+    await importBaileys();
     if (fs.existsSync(this.authDir)) {
       this.logger.log('Existing WhatsApp session found, reconnecting...');
       await this.connect();
