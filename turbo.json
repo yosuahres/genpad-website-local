@@ -4,7 +4,12 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["apps/*/.next/**", "!apps/*/.next/cache/**", "dist/**"]
+      "outputs": [
+        "apps/web/.next/**",
+        "apps/*/.next/**",
+        "!apps/*/.next/cache/**",
+        "dist/**"
+      ]
     },
     "lint": {},
     "lint:fix": {},
