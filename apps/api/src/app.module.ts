@@ -10,8 +10,8 @@ import { TemplateCardsModule } from './template-cards/template-cards.module';
 import { AuthModule } from './auth/auth.module';
 import { AuditModule } from './audit-logs/audit.module';
 import { DocumentsModule } from './documents/documents.module';
-import { ParentAsuhModule } from 'parent_asuh/parent-asuh.module';
-import { MessagingModule } from 'messaging/messaging.module';
+import { ParentAsuhModule } from './parent_asuh/parent-asuh.module';
+import { MessagingModule } from './messaging/messaging.module';
 import { WhatsAppModule } from './whatsapp/whatsapp.module';
 
 @Module({
