@@ -16,7 +16,7 @@ export async function fetchFromBackend(endpoint: string, options: RequestInit = 
     accessToken = session.access_token;
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL; // Loaded from root .env.web
   const url = `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
   const response = await fetch(url, {
